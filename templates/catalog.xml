@@ -1,0 +1,46 @@
+<yml_catalog date="{{ created }}">
+    <shop>
+        <name>Интернет-магазин</name>
+        <company>Интернет-магазин</company>
+        <categories>
+            {% for category in categories %}
+            <category id="{{ category.id }}">{{ category.name }}</category>
+                {% for subcategory in  category.subcategories.all%}
+                    <category id="{{ subcategory.id }}" parentId="{{ subcategory.category.id }}">{{ subcategory.name }}</category>
+                {% endfor %}
+            {% endfor %}
+        </categories>
+        <offers>
+            {% for item_type in item_types %}
+            <offer id="{{ item_type.id }}" productId="{{ item_type.item.id_1c }}" quantity="{{ item_type.quantity }}">
+                <url>{{ base_url }}{{ item_type.get_path }}</url>
+                <price>{{ item_type.item.price }}</price>
+                <purchasePrice>{{ item_type.item.price }}</purchasePrice>
+                <categoryId>{{ item_type.item.subcategory.id }}</categoryId>
+                {% for image in item_type.item.images.all %}
+                <picture>{{ base_url }}{{ image.image.url }}</picture>
+                    {% endfor %}
+                <name>{{ item_type.item.name }}</name>
+                <xmlId>???????????????????????</xmlId>
+                <productName>{{ item_type.item.name }}</productName>
+                <param name="Артикул" code="article">{{ item_type.item.article }}</param>
+                <param name="Размер" code="size">{{ item_type.size.name }}</param>
+                <param name="Рост">{{ item_type.height.name }}</param>
+                <param name="Цвет" code="color">{{ item_type.color.name }}</param>
+                <param name="Вес" code="weight">{{ item_type.item.subcategory.weight }}</param>
+                <param name="Ткань">{{ item_type.material.name }}</param>
+                {% if item_type.modification %}
+                    <param name="модификация">{{ item_type.modification.name }}</param>
+                {% else %}
+                    <param name="модификация">Нет модификации</param>
+                {% endif %}
+                <unit code="pcs" name="Штука" sym="шт."/>
+                <vatRate>none</vatRate>
+                <dimensions>100/50.8/150</dimensions>
+                <barcode>012485ab</barcode>
+                <markable>Y</markable>
+            </offer>
+            {% endfor %}
+        </offers>
+    </shop>
+</yml_catalog>
