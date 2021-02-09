@@ -12,7 +12,7 @@
         </categories>
         <offers>
             {% for item_type in item_types %}
-            <offer id="{{ item_type.id }}" productId="{{ item_type.item.id_1c }}" quantity="{{ item_type.quantity }}">
+            <offer id="{{ item_type.id }}" productId="{{ item_type.id_1c }}" quantity="{{ item_type.quantity }}">
                 <url>{{ base_url }}{{ item_type.get_path }}</url>
                 <price>{{ item_type.item.price }}</price>
                 <purchasePrice>{{ item_type.item.price }}</purchasePrice>
@@ -29,6 +29,9 @@
                 <param name="Цвет" code="color">{{ item_type.color.name }}</param>
                 <param name="Вес" code="weight">{{ item_type.item.subcategory.weight }}</param>
                 <param name="Ткань">{{ item_type.material.name }}</param>
+                <param name="1C ID Товара">{{ item_type.item.id_1c }}</param>
+                <param name="1C ID модификации">{{ item_type.modification.id_1c }}</param>
+                <param name="1C ID ткани">{{ item_type.material.id_1c }}</param>
                 {% if item_type.modification %}
                     <param name="модификация">{{ item_type.modification.name }}</param>
                 {% else %}

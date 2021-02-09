@@ -5,3 +5,5 @@ djoser
 pytils
 django-ckeditor
 django-colorfield
+ftputil
+lxml

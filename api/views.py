@@ -1,4 +1,6 @@
 import json
+
+import ftputil
 from django.template import loader, Context
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -157,6 +159,8 @@ class DeleteItem(APIView):
         item = CartItem.objects.get(id=data.get('item_id'))
         item.delete()
         return Response(status=200)
+
+
 class AddToCart(APIView):
     def post(self, request):
         data = request.data
@@ -180,3 +184,77 @@ def catalog_feed(request,):
     t = loader.get_template('catalog.xml')
     c = template_vars
     return HttpResponse(t.render(c),content_type='text/xml')
+
+class CheckFtp(APIView):
+
+    def get(self,request):
+        from lxml import etree
+        # with ftputil.FTPHost('185.92.148.221', settings.FTP_USER, settings.FTP_PASSWORD) as host:
+        #     names = host.listdir(host.curdir)
+        #     for name in names:
+        #         if host.path.isfile(name):
+        #             host.download(name, name)
+        tree = etree.parse('tovar.xml')
+        root = tree.getroot()
+        for element in root:
+            item_id = element.find("basic_item").text
+            item_name = element.find("name").text
+            item_price = element.find("price").text
+            item, created = Item.objects.get_or_create(id_1c=item_id)
+            if created:
+                item.name = item_name
+                item.price = item_price
+                item.save()
+        tree = etree.parse('vigruzka.xml')
+        root = tree.getroot()
+
+        for element in root:
+            basic_item_id = element.find("basic_item").text
+            base_item, created = Item.objects.get_or_create(id_1c=basic_item_id)
+
+            color_id = element.find("color").text
+            color, created = ItemColor.objects.get_or_create(id_1c=color_id)
+            if created:
+                color.name = 'Новый цвет'
+                color.save()
+
+            size_name = element.find("size").text
+            size, created = ItemSize.objects.get_or_create(name=size_name)
+            if created:
+                size.name = size_name
+                size.save()
+
+            height_name = element.find("height").text
+            height, created = ItemHeight.objects.get_or_create(name=height_name)
+            if created:
+                height.name = height_name
+                height.save()
+
+            add_name = element.find("add").text
+            if add_name == '0':
+                add_name = 'Нет модификации'
+            mod, created = ItemModification.objects.get_or_create(name=add_name)
+            if created:
+                if add_name == '0':
+                    add_name = 'Нет модификации'
+                mod.name = add_name
+                mod.save()
+
+            cloth_name = element.find("cloth").text
+            material, created = ItemMaterial.objects.get_or_create(name=cloth_name)
+            if created:
+                material.name = cloth_name
+                material.save()
+
+            item_id = element.find("item_id").text
+            item_type, created = ItemType.objects.get_or_create(id_1c=item_id)
+            if created:
+                item_type.item = base_item
+                item_type.color = color
+                item_type.size = size
+                item_type.height = height
+                item_type.material = material
+                item_type.modification = mod
+                item_type.save()
+
+        return Response(status=200)

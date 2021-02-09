@@ -127,7 +127,8 @@ class ItemColor(models.Model):
         verbose_name_plural = "5.3. Цвета"
 
     def save(self, *args, **kwargs):
-        self.name_slug = slugify(self.name)
+        if self.name:
+            self.name_slug = slugify(self.name)
         super(ItemColor, self).save(*args, **kwargs)
 
 
@@ -137,7 +138,8 @@ class ItemSize(models.Model):
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
 
     def save(self, *args, **kwargs):
-        self.name_slug = slugify(self.name)
+        if self.name:
+            self.name_slug = slugify(self.name)
         super(ItemSize, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -154,7 +156,8 @@ class ItemHeight(models.Model):
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
 
     def save(self, *args, **kwargs):
-        self.name_slug = slugify(self.name)
+        if self.name:
+            self.name_slug = slugify(self.name)
         super(ItemHeight, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -171,7 +174,8 @@ class ItemMaterial(models.Model):
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
 
     def save(self, *args, **kwargs):
-        self.name_slug = slugify(self.name)
+        if self.name:
+            self.name_slug = slugify(self.name)
         super(ItemMaterial, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -188,7 +192,8 @@ class ItemModification(models.Model):
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
 
     def save(self, *args, **kwargs):
-        self.name_slug = slugify(self.name)
+        if self.name:
+            self.name_slug = slugify(self.name)
         super(ItemModification, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -252,7 +257,8 @@ class Item(models.Model):
             if testSlug:
                 slugRandom = '-' + ''.join(choices(string.ascii_lowercase + string.digits, k=2))
             self.name_slug = slug + slugRandom
-        self.name_lower = self.name.lower()
+        if self.name:
+            self.name_lower = self.name.lower()
         super(Item, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -295,8 +301,9 @@ class ItemType(models.Model):
         return f'/category/{self.item.subcategory.category.name_slug}/{self.item.subcategory.name_slug}/{self.item.name_slug}'
 
     def save(self, *args, **kwargs):
-        self.name_slug = f'{self.item.name_slug}-{self.color.name_slug}-' \
-                         f'{self.size.name_slug}-{self.height.name_slug}'
+
+        # self.name_slug = f'{self.item.name_slug}-{self.color.name_slug}-' \
+        #                  f'{self.size.name_slug}-{self.height.name_slug}'
         super(ItemType, self).save(*args, **kwargs)
 
     def color_tag(self):

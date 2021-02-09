@@ -15,6 +15,7 @@ urlpatterns = [
     path('plus_quantity', views.PlusQuantity.as_view()),
     path('minus_quantity', views.MinusQuantity.as_view()),
     path('apply_promo', views.ApplyPromo.as_view()),
+    path('check_ftp', views.CheckFtp.as_view()),
 
     path('catalog.xml', views.catalog_feed, name='catalog_feed'),
 
