@@ -190,11 +190,11 @@ class CheckFtp(APIView):
 
     def get(self,request):
         from lxml import etree
-        # with ftputil.FTPHost('185.92.148.221', settings.FTP_USER, settings.FTP_PASSWORD) as host:
-        #     names = host.listdir(host.curdir)
-        #     for name in names:
-        #         if host.path.isfile(name):
-        #             host.download(name, name)
+        with ftputil.FTPHost('185.92.148.221', settings.FTP_USER, settings.FTP_PASSWORD) as host:
+            names = host.listdir(host.curdir)
+            for name in names:
+                if host.path.isfile(name):
+                    host.download(name, name)
         tree = etree.parse('tovar.xml')
         root = tree.getroot()
         for element in root:
