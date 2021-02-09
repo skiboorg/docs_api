@@ -299,12 +299,12 @@ class ItemType(models.Model):
 
     def get_path(self):
         return f'/category/{self.item.subcategory.category.name_slug}/{self.item.subcategory.name_slug}/{self.item.name_slug}'
-
-    def save(self, *args, **kwargs):
-
-        # self.name_slug = f'{self.item.name_slug}-{self.color.name_slug}-' \
-        #                  f'{self.size.name_slug}-{self.height.name_slug}'
-        super(ItemType, self).save(*args, **kwargs)
+    #
+    # def save(self, *args, **kwargs):
+    #
+    #     # self.name_slug = f'{self.item.name_slug}-{self.color.name_slug}-' \
+    #     #                  f'{self.size.name_slug}-{self.height.name_slug}'
+    #     super(ItemType, self).save(*args, **kwargs)
 
     def color_tag(self):
         return self.color.name

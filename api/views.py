@@ -181,6 +181,7 @@ def catalog_feed(request,):
     template_vars['base_url'] = settings.BASE_URL
     template_vars['created'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+
     t = loader.get_template('catalog.xml')
     c = template_vars
     return HttpResponse(t.render(c),content_type='text/xml')
