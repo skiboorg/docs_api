@@ -21,7 +21,7 @@
                 <picture>{{ base_url }}{{ image.image.url }}</picture>
                     {% endfor %}
                 <name>{{ item_type.item.name }}</name>
-                <xmlId>???????????????????????</xmlId>
+                <xmlId>xmlId</xmlId>
                 <productName>{{ item_type.item.name }}</productName>
                 <param name="Артикул" code="article">{{ item_type.item.article }}</param>
                 <param name="Размер" code="size">{{ item_type.size.name }}</param>
