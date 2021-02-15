@@ -162,7 +162,7 @@ class CreateOrder(APIView):
                 'initialPrice': item.item_type.item.price,
                 'quantity': item.quantity,
                 'offer':{
-                    'xmlId':item.item_type.id_1c
+                    'xmlId':f'{item.item_type.item.id_1c}#{item.item_type.id_1c}'
                 }
             })
         cart.promo_code = None
