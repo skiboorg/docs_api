@@ -1,5 +1,7 @@
-import json
+# coding utf-8
 
+import json
+import retailcrm
 import ftputil
 from django.template import loader, Context
 from django.http import HttpResponse
@@ -64,48 +66,48 @@ class GetItem_old(APIView):
         types = ItemType.objects.filter(item=item)
 
         for type in types:
-           color_for_add = {
-               "color_id": type.color.id,
-               "color_hex": type.color.bg_color,
-               "color_name": type.color.name
-           }
-           if not color_for_add in colors:
-               colors.append(color_for_add)
+            color_for_add = {
+                "color_id": type.color.id,
+                "color_hex": type.color.bg_color,
+                "color_name": type.color.name
+            }
+            if not color_for_add in colors:
+                colors.append(color_for_add)
 
         for color in colors:
-           color["sizes"] = []
-           color["images"] = []
+            color["sizes"] = []
+            color["images"] = []
 
         for type in types:
-           for color in colors:
-               if color["color_id"] == type.color.id:
-                   size_to_add = {
-                       "size_id": type.size.id,
-                       "size_name": type.size.name,
-                       "heights": []
-                   }
-                   if not size_to_add in color["sizes"]:
-                       color["sizes"].append(size_to_add)
+            for color in colors:
+                if color["color_id"] == type.color.id:
+                    size_to_add = {
+                        "size_id": type.size.id,
+                        "size_name": type.size.name,
+                        "heights": []
+                    }
+                    if not size_to_add in color["sizes"]:
+                        color["sizes"].append(size_to_add)
         for type in types:
-           for color in colors:
-               for size in color['sizes']:
-                   if color['color_id'] == type.color.id and size['size_id'] == type.size.id:
-                       height_to_add = {
-                           "height_id": type.height.id,
-                           "height_name": type.height.name,
-                       }
-                       if not height_to_add in size['heights']:
-                           size['heights'].append(height_to_add)
+            for color in colors:
+                for size in color['sizes']:
+                    if color['color_id'] == type.color.id and size['size_id'] == type.size.id:
+                        height_to_add = {
+                            "height_id": type.height.id,
+                            "height_name": type.height.name,
+                        }
+                        if not height_to_add in size['heights']:
+                            size['heights'].append(height_to_add)
 
         for color in colors:
             images = ItemImage.objects.filter(item=type.item, color_id=color['color_id'])
             for image in images:
-               image_to_add = {
-                   "image_id": image.id,
-                   "image": image.image.url,
-                   "image_thumb": image.image_thumb.url,
-               }
-               color['images'].append(image_to_add)
+                image_to_add = {
+                    "image_id": image.id,
+                    "image": image.image.url,
+                    "image_thumb": image.image_thumb.url,
+                }
+                color['images'].append(image_to_add)
         result = {
             "item_data":ItemSerializer(item).data,
             "colors_data": colors
@@ -120,6 +122,69 @@ class GetCart(APIView):
         print(cart)
         serializer = CartSerializer(cart)
         return Response(serializer.data,status=200)
+
+class CreateOrder(APIView):
+    def post(self, request):
+        data = request.data
+        session_id = data.get('session_id')
+        order_data = data.get('order')
+        cart = check_if_cart_exists(request, session_id)
+
+
+        new_order = Order.objects.create(
+            payment=order_data.get('pay_type'),
+            phone=order_data.get('phone'),
+            email=order_data.get('email'),
+            fio=order_data.get('fio'),
+            street=order_data.get('street'),
+            house=order_data.get('house'),
+            flat=order_data.get('flat'),
+            delivery_id=order_data.get('delivery_type') if order_data.get('delivery_type') > 0 else None,
+            city_id=order_data.get('delivery_city') if order_data.get('delivery_city') else None,
+            comment=order_data.get('comment'),
+            promo_code=cart.promo_code,
+            weight=cart.weight,
+            total_price=cart.total_price
+        )
+        if cart.client:
+            new_order.client = cart.client
+        else:
+            new_order.guest = cart.guest
+
+        new_order.save()
+        items=[]
+        for item in cart.items.all():
+            new_order_item = OrderItem.objects.create(item_type=item.item_type,quantity=item.quantity)
+            new_order.items.add(new_order_item)
+            # item.delete()
+            items.append({
+                'productName': item.item_type.item.name,
+                'initialPrice': item.item_type.item.price,
+                'quantity': item.quantity,
+                'offer':{
+                    'xmlId':item.item_type.id_1c
+                }
+            })
+        cart.promo_code = None
+        cart.save()
+
+        client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
+        order = {
+            'firstName': new_order.fio,
+            'lastName': '',
+            'phone': new_order.phone,
+            'email': new_order.email,
+            'items': items,
+            'orderMethod': 'call-request',
+        }
+
+        result = client.order_create(order)
+
+
+
+
+        return Response({'order_code': True}, status=200)
+
 
 class ApplyPromo(APIView):
     def post(self, request):

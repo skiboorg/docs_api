@@ -37,4 +37,6 @@ admin.site.register(ItemMaterial)
 admin.site.register(City)
 admin.site.register(DeliveryType)
 admin.site.register(PromoCode)
+admin.site.register(Order)
+admin.site.register(OrderItem)
 

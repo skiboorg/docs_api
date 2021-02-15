@@ -225,7 +225,8 @@ class Item(models.Model):
     carry = RichTextUploadingField('Тект для вкладки Состав и уход', blank=True, null=True)
     delivery = RichTextUploadingField('Тект для вкладки Срок доставки', blank=True, null=True)
 
-    is_active = models.BooleanField('Отображать товар ?', default=True, db_index=True)
+    is_active = models.BooleanField('Отображать товар ?', default=False, db_index=True)
+    is_in_feed = models.BooleanField('Выгружать товар ?', default=False, db_index=True)
     is_present = models.BooleanField('Товар в наличии ?', default=True, db_index=True)
     is_new = models.BooleanField('Товар новинка ?', default=False, db_index=True)
     buys = models.IntegerField(default=0,editable=False)
@@ -431,4 +432,59 @@ class Cart(models.Model):
         verbose_name = "Корзина"
         verbose_name_plural = "Корзины"
 
+class OrderItem(models.Model):
+    item_type = models.ForeignKey(ItemType, blank=True, null=True, on_delete=models.CASCADE)
+    quantity = models.IntegerField('Кол-во', blank=True, null=True, default=1)
+    price = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "Товар в заказе"
+
+    class Meta:
+        verbose_name = "Товар в заказе"
+        verbose_name_plural = "Товары в заказах"
+
+    def save(self, *args, **kwargs):
+        self.price = self.item_type.item.price * self.quantity
+        super(OrderItem, self).save(*args, **kwargs)
+
+class Order(models.Model):
+    client = models.ForeignKey('user.User', blank=True, null=True, default=None, on_delete=models.CASCADE,
+                               verbose_name='Заказ клиента')
+    guest = models.ForeignKey('user.Guest', blank=True, null=True, default=None, on_delete=models.CASCADE,
+                              verbose_name='Заказ гостя')
+    promo_code = models.ForeignKey(PromoCode, blank=True, null=True, default=None, on_delete=models.SET_NULL,
+                               verbose_name='Использованный промо-код')
+    items = models.ManyToManyField(OrderItem, blank=True, verbose_name='Товары')
+    payment = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    fio = models.CharField(max_length=255, blank=True, null=True)
+    street = models.CharField(max_length=255, blank=True, null=True)
+    house = models.CharField(max_length=255, blank=True, null=True)
+    flat = models.CharField(max_length=255, blank=True, null=True)
+
+    delivery = models.ForeignKey(DeliveryType, blank=True, null=True, default=None, on_delete=models.CASCADE,
+                               verbose_name='Доставка')
+    city = models.ForeignKey(City, blank=True, null=True, default=None, on_delete=models.CASCADE,
+                                 verbose_name='Город')
+    comment = models.TextField(blank=True, null=True)
+    total_price = models.IntegerField('Общая стоимость заказа', default=0)
+    # total_price_with_code = models.DecimalField('Общая стоимость заказа с учетом промо-кода', decimal_places=2,
+    #                                             max_digits=10, default=0)
+    weight = models.IntegerField(default=0)
+
+    track_code = models.CharField('Трек код', max_length=50, blank=True, null=True)
+    order_code = models.CharField('Код заказа', max_length=10, blank=True, null=True)
+    is_complete = models.BooleanField('Заказ выполнен ?', default=False)
+    is_payed = models.BooleanField('Заказ оплачен ?', default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'Заказ ID {self.id} от {self.created_at}'
+
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
 

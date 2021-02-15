@@ -7,3 +7,4 @@ django-ckeditor
 django-colorfield
 ftputil
 lxml
+retailcrm
