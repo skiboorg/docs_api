@@ -262,10 +262,13 @@ class CheckOstatok(APIView):
                     host.download(name, name)
         tree = etree.parse('VigruzkaOstatok.xml')
         root = tree.getroot()
+        print(root)
+        items = 0
         for element in root:
+            print(element)
             item_id = element.find("item_id").text
             quantity = element.find("goods").text
-            items=0
+            print(item_id)
             try:
                 item = ItemType.objects.get(id_1c=item_id)
                 item.quantity = int(quantity)
@@ -273,7 +276,7 @@ class CheckOstatok(APIView):
                 items += 1
             except ItemType.DoesNotExist:
                 pass
-            return Response({'Обновлено товаров':items},status=200)
+        return Response({'Обновлено остатков':items},status=200)
 
 class CheckFtp(APIView):
 
@@ -286,16 +289,23 @@ class CheckFtp(APIView):
                     host.download(name, name)
         tree = etree.parse('tovar.xml')
         root = tree.getroot()
+        new_items = 0
+        updated_items = 0
         for element in root:
             item_id = element.find("basic_item").text
             item_name = element.find("name").text
             item_price = element.find("price").text
             item, created = Item.objects.get_or_create(id_1c=item_id)
+            if created:
+                new_items += 1
+            else:
+                updated_items += 1
             item.name = item_name
             item.price = item_price
             item.save()
-        tree = etree.parse('vigruzka.xml')
-        root = tree.getroot()
+
+        # tree = etree.parse('vigruzka.xml')
+        # root = tree.getroot()
 
         # for element in root:
         #     basic_item_id = element.find("basic_item").text
@@ -346,7 +356,7 @@ class CheckFtp(APIView):
         #         item_type.modification = mod
         #         item_type.save()
 
-        return Response(status=200)
+        return Response({'Создано базовых товаров':new_items, 'Обновлено базовый товаров':updated_items},status=200)
 
 
 class CalculateDelivery(APIView):
