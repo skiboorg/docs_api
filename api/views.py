@@ -265,13 +265,15 @@ class CheckOstatok(APIView):
         for element in root:
             item_id = element.find("item_id").text
             quantity = element.find("goods").text
+            items=0
             try:
                 item = ItemType.objects.get(id_1c=item_id)
-                item.quantity = quantity
+                item.quantity = int(quantity)
                 item.save()
+                items += 1
             except ItemType.DoesNotExist:
                 pass
-            return Response(status=200)
+            return Response({'Обновлено товаров':items},status=200)
 
 class CheckFtp(APIView):
 
