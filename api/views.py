@@ -252,6 +252,27 @@ def catalog_feed(request,):
     c = template_vars
     return HttpResponse(t.render(c),content_type='text/xml')
 
+class CheckOstatok(APIView):
+    def get(self, request):
+        from lxml import etree
+        with ftputil.FTPHost('185.92.148.221', settings.FTP_USER, settings.FTP_PASSWORD) as host:
+            names = host.listdir(host.curdir)
+            for name in names:
+                if host.path.isfile(name):
+                    host.download(name, name)
+        tree = etree.parse('VigruzkaOstatok.xml')
+        root = tree.getroot()
+        for element in root:
+            item_id = element.find("item_id").text
+            quantity = element.find("goods").text
+            try:
+                item = ItemType.objects.get(id_1c=item_id)
+                item.quantity = quantity
+                item.save()
+            except ItemType.DoesNotExist:
+                pass
+            return Response(status=200)
+
 class CheckFtp(APIView):
 
     def get(self, request):
