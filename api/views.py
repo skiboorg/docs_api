@@ -13,6 +13,9 @@ from .models import *
 from user.models import Guest
 from .services import *
 from datetime import datetime
+from pycdek3 import Client
+
+
 import settings
 
 
@@ -161,9 +164,9 @@ class CreateOrder(APIView):
                 'productName': item.item_type.item.name,
                 'initialPrice': item.item_type.item.price,
                 'quantity': item.quantity,
-                'offer':{
-                    'xmlId':f'{item.item_type.item.id_1c}#{item.item_type.id_1c}',
-                    'id':item.item_type.id
+                'offer': {
+                    'xmlId': f'{item.item_type.item.id_1c.split("#")[0]}#{item.item_type.id_1c}',
+                    # 'id': item.item_type.id
                 }
             })
         cart.promo_code = None
@@ -176,14 +179,11 @@ class CreateOrder(APIView):
             'phone': new_order.phone,
             'email': new_order.email,
             'items': items,
+            'customerComment': new_order.comment,
             'orderMethod': 'call-request',
         }
-
+        print(order)
         result = client.order_create(order)
-
-
-
-
         return Response({'order_code': True}, status=200)
 
 
@@ -254,7 +254,7 @@ def catalog_feed(request,):
 
 class CheckFtp(APIView):
 
-    def get(self,request):
+    def get(self, request):
         from lxml import etree
         with ftputil.FTPHost('185.92.148.221', settings.FTP_USER, settings.FTP_PASSWORD) as host:
             names = host.listdir(host.curdir)
@@ -268,60 +268,74 @@ class CheckFtp(APIView):
             item_name = element.find("name").text
             item_price = element.find("price").text
             item, created = Item.objects.get_or_create(id_1c=item_id)
-            if created:
-                item.name = item_name
-                item.price = item_price
-                item.save()
+            item.name = item_name
+            item.price = item_price
+            item.save()
         tree = etree.parse('vigruzka.xml')
         root = tree.getroot()
 
-        for element in root:
-            basic_item_id = element.find("basic_item").text
-            base_item, created = Item.objects.get_or_create(id_1c=basic_item_id)
+        # for element in root:
+        #     basic_item_id = element.find("basic_item").text
+        #     base_item, created = Item.objects.get_or_create(id_1c=basic_item_id)
+        #
+        #     color_id = element.find("color").text
+        #     color, created = ItemColor.objects.get_or_create(id_1c=color_id)
+        #     if created:
+        #         color.name = 'Новый цвет'
+        #         color.save()
+        #
+        #     size_name = element.find("size").text
+        #     size, created = ItemSize.objects.get_or_create(name=size_name)
+        #     if created:
+        #         size.name = size_name
+        #         size.save()
+        #
+        #     height_name = element.find("height").text
+        #     height, created = ItemHeight.objects.get_or_create(name=height_name)
+        #     if created:
+        #         height.name = height_name
+        #         height.save()
+        #
+        #     add_name = element.find("add").text
+        #     if add_name == '0':
+        #         add_name = 'Нет модификации'
+        #     mod, created = ItemModification.objects.get_or_create(name=add_name)
+        #     if created:
+        #         if add_name == '0':
+        #             add_name = 'Нет модификации'
+        #         mod.name = add_name
+        #         mod.save()
+        #
+        #     cloth_name = element.find("cloth").text
+        #     material, created = ItemMaterial.objects.get_or_create(name=cloth_name)
+        #     if created:
+        #         material.name = cloth_name
+        #         material.save()
+        #
+        #     item_id = element.find("item_id").text
+        #     item_type, created = ItemType.objects.get_or_create(id_1c=item_id)
+        #     if created:
+        #         item_type.item = base_item
+        #         item_type.color = color
+        #         item_type.size = size
+        #         item_type.height = height
+        #         item_type.material = material
+        #         item_type.modification = mod
+        #         item_type.save()
 
-            color_id = element.find("color").text
-            color, created = ItemColor.objects.get_or_create(id_1c=color_id)
-            if created:
-                color.name = 'Новый цвет'
-                color.save()
+        return Response(status=200)
 
-            size_name = element.find("size").text
-            size, created = ItemSize.objects.get_or_create(name=size_name)
-            if created:
-                size.name = size_name
-                size.save()
 
-            height_name = element.find("height").text
-            height, created = ItemHeight.objects.get_or_create(name=height_name)
-            if created:
-                height.name = height_name
-                height.save()
+class CalculateDelivery(APIView):
+    def get(self,request):
+        # MOSCOW_ID = 44
+        # SP_ID = 137
+        #
+        # tariffs = [119]
+        #
+        # print(Client.get_shipping_cost(MOSCOW_ID, SP_ID, tariffs,
+        #                                goods=[{'weight': 3000, 'length': 50, 'width': 10, 'height': 20}]))
 
-            add_name = element.find("add").text
-            if add_name == '0':
-                add_name = 'Нет модификации'
-            mod, created = ItemModification.objects.get_or_create(name=add_name)
-            if created:
-                if add_name == '0':
-                    add_name = 'Нет модификации'
-                mod.name = add_name
-                mod.save()
 
-            cloth_name = element.find("cloth").text
-            material, created = ItemMaterial.objects.get_or_create(name=cloth_name)
-            if created:
-                material.name = cloth_name
-                material.save()
-
-            item_id = element.find("item_id").text
-            item_type, created = ItemType.objects.get_or_create(id_1c=item_id)
-            if created:
-                item_type.item = base_item
-                item_type.color = color
-                item_type.size = size
-                item_type.height = height
-                item_type.material = material
-                item_type.modification = mod
-                item_type.save()
 
         return Response(status=200)

@@ -8,3 +8,4 @@ django-colorfield
 ftputil
 lxml
 retailcrm
+pycdek3
