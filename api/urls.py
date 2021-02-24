@@ -20,6 +20,7 @@ urlpatterns = [
     path('check_ostatok', views.CheckOstatok.as_view()),
     path('calculate_delivery', views.CalculateDelivery.as_view()),
 
+
     path('catalog.xml', views.catalog_feed, name='catalog_feed'),
 
 ]

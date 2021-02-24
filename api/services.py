@@ -1,9 +1,16 @@
-from user.models import Guest
+import json
 
+from user.models import Guest
+import datetime as dt
+from datetime import datetime
+from django.utils import timezone
+import requests
 from PIL import Image
 from io import BytesIO
 from yookassa import Configuration, Payment
 from rest_framework.response import Response
+
+
 import uuid
 import settings
 
@@ -116,9 +123,9 @@ def pay_request(order):
 
 
     new_payment = PaymentObj.objects.create(pay_id=payment.id,
-                              pay_code=pay_id,
-                              amount=amount,
-                              status='Не оплачен')
+                                            pay_code=pay_id,
+                                            amount=amount,
+                                            status='Не оплачен')
 
     if order.client:
         new_payment.client = order.client
@@ -126,3 +133,62 @@ def pay_request(order):
         new_payment.guest = order.guest
     new_payment.save()
     return Response(payment.confirmation.confirmation_url)
+
+def cdekGetToken():
+    print('get token')
+    data = {
+        'grant_type': 'client_credentials',
+        'client_id': settings.CDEK_CLIENT_ID,
+        'client_secret': settings.CDEK_CLIENT_SECRET
+    }
+    response = requests.post('https://api.cdek.ru/v2/oauth/token?parameters', data=data)
+    access_token = response.json().get('access_token')
+    return access_token
+
+def checkCdekToken():
+    from .models import CdekKey
+    access_token = ''
+    try:
+        key = CdekKey.objects.first()
+        access_token = key.access_token
+
+    except CdekKey.DoesNotExist:
+        access_token = cdekGetToken()
+        CdekKey.objects.create(access_token=access_token)
+        return access_token
+
+    if timezone.now() - key.updated_at > dt.timedelta(hours=1):
+        print('expired')
+        access_token = cdekGetToken()
+        key.access_token = access_token
+        key.save()
+    return access_token
+
+def calculateDelivery(access_token,city_code,weight):
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f"Bearer {access_token}",
+    }
+    data = {
+        "type": "2",
+        "date": "2020-11-03T11:49:32+0700",
+        "currency": "1",
+        "tariff_code": "11",
+        "from_location": {
+            "code": "44"
+        },
+        "to_location": {
+            "code": city_code
+        },
+        "packages": [
+            {
+                "weight": weight
+            }
+        ]
+    }
+    response = requests.post('https://api.cdek.ru/v2/calculator/tariff',
+                             headers=headers,
+                             data=json.dumps(data))
+    return response.json().get('delivery_sum')
+
+

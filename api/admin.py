@@ -41,4 +41,5 @@ admin.site.register(DeliveryType)
 admin.site.register(PromoCode)
 admin.site.register(Order)
 admin.site.register(OrderItem)
+admin.site.register(CdekKey)
 

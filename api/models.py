@@ -9,6 +9,13 @@ from django.utils.safestring import mark_safe
 from django.core.files import File
 from .services import image_resize_and_watermark
 
+
+
+class CdekKey(models.Model):
+    access_token = models.TextField(blank=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 class PaymentObj(models.Model):
     pay_id = models.CharField('ID платежа',max_length=255,blank=True,null=True)
     pay_code = models.CharField('ID платежа',max_length=255,blank=True,null=True)
@@ -53,7 +60,9 @@ class City(models.Model):
                              verbose_name='Относится к ',related_name='cities')
     name = models.CharField('Название города', max_length=255, blank=False, null=True)
     name_lower = models.CharField('Название города', max_length=255, blank=False, null=True,editable=False)
-    price = models.IntegerField('Стоимость доставки',blank=False,null=True)
+    price = models.IntegerField('Стоимость доставки',blank=True,null=True)
+    code = models.IntegerField('Код города',blank=False,null=True)
+
 
     def __str__(self):
         return f'{self.name} - стоимость {self.price}'

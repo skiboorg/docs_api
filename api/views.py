@@ -369,15 +369,11 @@ class CheckFtp(APIView):
 
 
 class CalculateDelivery(APIView):
-    def get(self,request):
-        # MOSCOW_ID = 44
-        # SP_ID = 137
-        #
-        # tariffs = [119]
-        #
-        # print(Client.get_shipping_cost(MOSCOW_ID, SP_ID, tariffs,
-        #                                goods=[{'weight': 3000, 'length': 50, 'width': 10, 'height': 20}]))
+    def get(self, request):
+        city_code = self.request.query_params.get('city_code')
+        weight = self.request.query_params.get('weight')
+        access_token = checkCdekToken()
+        price = int(calculateDelivery(access_token, city_code, weight))
 
 
-
-        return Response(status=200)
+        return Response({'delivery_price':price}, status=200)
