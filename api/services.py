@@ -148,11 +148,11 @@ def cdekGetToken():
 def checkCdekToken():
     from .models import CdekKey
     access_token = ''
+
     try:
         key = CdekKey.objects.first()
         access_token = key.access_token
-
-    except CdekKey.DoesNotExist:
+    except:
         access_token = cdekGetToken()
         CdekKey.objects.create(access_token=access_token)
         return access_token
