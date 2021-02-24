@@ -16,6 +16,7 @@ from datetime import datetime
 from pycdek3 import Client
 
 
+
 import settings
 
 
@@ -129,6 +130,7 @@ class GetCart(APIView):
 class CreateOrder(APIView):
     def post(self, request):
         data = request.data
+        print(data)
         session_id = data.get('session_id')
         order_data = data.get('order')
         cart = check_if_cart_exists(request, session_id)
@@ -142,7 +144,7 @@ class CreateOrder(APIView):
             street=order_data.get('street'),
             house=order_data.get('house'),
             flat=order_data.get('flat'),
-            delivery_id=order_data.get('delivery_type') if order_data.get('delivery_type') > 0 else None,
+            delivery_id=order_data.get('delivery_type'),
             city_id=order_data.get('delivery_city') if order_data.get('delivery_city') else None,
             comment=order_data.get('comment'),
             promo_code=cart.promo_code,
@@ -172,18 +174,25 @@ class CreateOrder(APIView):
         cart.promo_code = None
         cart.save()
 
-        client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
-        order = {
-            'firstName': new_order.fio,
-            'lastName': '',
-            'phone': new_order.phone,
-            'email': new_order.email,
-            'items': items,
-            'customerComment': new_order.comment,
-            'orderMethod': 'call-request',
-        }
-        print(order)
-        result = client.order_create(order)
+
+
+        if order_data.get('pay_type')=='online':
+            pay_request(new_order)
+
+
+
+        # client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
+        # order = {
+        #     'firstName': new_order.fio,
+        #     'lastName': '',
+        #     'phone': new_order.phone,
+        #     'email': new_order.email,
+        #     'items': items,
+        #     'customerComment': new_order.comment,
+        #     'orderMethod': 'call-request',
+        # }
+        # print(order)
+        # result = client.order_create(order)
         return Response({'order_code': True}, status=200)
 
 

@@ -2,6 +2,11 @@ from user.models import Guest
 
 from PIL import Image
 from io import BytesIO
+from yookassa import Configuration, Payment
+from rest_framework.response import Response
+import uuid
+import settings
+
 
 def check_if_guest_exists(session_id):
     guest, created = Guest.objects.get_or_create(session=session_id)
@@ -74,3 +79,50 @@ def image_resize_and_watermark(image,watermarked,new_w,new_h):
     # transparent.show()
     transparent.save(blob, 'png', quality=100, optimize=True)
     return blob
+
+
+def pay_request(order):
+    from .models import PaymentObj
+    if order.city:
+        delivery_price = order.city.price
+    else:
+        delivery_price = 0
+    print('delivery_price', delivery_price)
+    order_total_price = order.total_price
+    amount = order_total_price + delivery_price
+
+    # payment_type = request.data.get('pay_type')
+
+    Configuration.account_id = settings.YA_SHOP_ID
+    Configuration.secret_key = settings.YA_API
+    pay_id = uuid.uuid4()
+    payment = Payment.create({
+        "amount": {
+            "value": amount,
+            "currency": "RUB"
+        },
+        # "payment_method": {
+        #     "type": payment_type,
+        # },
+        "confirmation": {
+            "type": "redirect",
+            "return_url": f'{settings.HOST}/lk/balance?pay_id={pay_id}'
+        },
+        "capture": True,
+        "description": f'Оплата заказа ID {order.id}'
+    }, pay_id)
+
+    print(payment)
+
+
+    new_payment = PaymentObj.objects.create(pay_id=payment.id,
+                              pay_code=pay_id,
+                              amount=amount,
+                              status='Не оплачен')
+
+    if order.client:
+        new_payment.client = order.client
+    else:
+        new_payment.guest = order.guest
+    new_payment.save()
+    return Response(payment.confirmation.confirmation_url)

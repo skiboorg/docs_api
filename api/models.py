@@ -9,18 +9,43 @@ from django.utils.safestring import mark_safe
 from django.core.files import File
 from .services import image_resize_and_watermark
 
+class PaymentObj(models.Model):
+    pay_id = models.CharField('ID платежа',max_length=255,blank=True,null=True)
+    pay_code = models.CharField('ID платежа',max_length=255,blank=True,null=True)
+    client = models.ForeignKey('user.User', blank=True, null=True,
+                                  on_delete=models.CASCADE,
+                                  verbose_name='Пользователь')
+    guest = models.ForeignKey('user.Guest', blank=True, null=True,
+                                  on_delete=models.CASCADE,
+                                  verbose_name='Гость')
+
+    type = models.CharField('Вид платежа',max_length=255,blank=True,null=True)
+    status = models.CharField('Статус платежа', max_length=255,blank=True,null=True)
+    amount = models.IntegerField('Сумма платежа', blank=True,null=True)
+    is_payed = models.BooleanField("Оплачен?", default=False)
+    created_at = models.DateTimeField("Дата платежа", auto_now_add=True)
+
+    def __str__(self):
+        return f'Платеж от {self.created_at}. На сумму {self.amount}. Статус {self.status}'
+
+    class Meta:
+        verbose_name = "Платеж"
+        verbose_name_plural = "Платежи"
 
 class DeliveryType(models.Model):
     name = models.CharField('Название типа доставки', max_length=255, blank=False, null=True)
     time = models.CharField('Минимальное время доставки', max_length=255, blank=False, null=True)
     price = models.CharField('Минимальная стоимость доставки', max_length=255, blank=False, null=True)
+    is_self_delivery = models.BooleanField('Это самовывоз?', default=False)
 
     def __str__(self):
         return f'Тип доставки : {self.name}'
 
     class Meta:
+        ordering = ('-is_self_delivery',)
         verbose_name = "Тип доставки"
         verbose_name_plural = "Типы доставки"
+
 
 
 class City(models.Model):
@@ -214,7 +239,7 @@ class Item(models.Model):
                                    related_name='collection_items')
     name = models.CharField('Название товара', max_length=255, blank=True, null=True)
     name_lower = models.CharField(max_length=255, blank=True, null=True,default='',editable=False)
-    name_slug = models.CharField(max_length=255, blank=True, null=True,db_index=True,editable=False)
+    name_slug = models.CharField(max_length=255, blank=True, null=True,db_index=True)
     old_price = models.IntegerField('Цена без скидки', blank=True, default=0, editable=False)
     price = models.IntegerField('Цена', blank=True, default=0, db_index=True)
     article = models.CharField('Артикул', max_length=50, blank=True, null=True)
@@ -252,7 +277,7 @@ class Item(models.Model):
             self.price = self.old_price
 
         slug = slugify(self.name)
-        if not self.name_slug:
+        if self.name and not self.name_slug:
             testSlug = Item.objects.filter(name_slug=slug)
             slugRandom = ''
             if testSlug:

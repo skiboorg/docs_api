@@ -9,3 +9,4 @@ ftputil
 lxml
 retailcrm
 pycdek3
+yookassa
