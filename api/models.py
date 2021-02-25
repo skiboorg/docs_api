@@ -44,6 +44,7 @@ class DeliveryType(models.Model):
     time = models.CharField('Минимальное время доставки', max_length=255, blank=False, null=True)
     price = models.CharField('Минимальная стоимость доставки', max_length=255, blank=False, null=True)
     is_self_delivery = models.BooleanField('Это самовывоз?', default=False)
+    code = models.CharField('Код доставки для CRM', max_length=255, blank=False, null=True)
 
     def __str__(self):
         return f'Тип доставки : {self.name}'
@@ -60,12 +61,12 @@ class City(models.Model):
                              verbose_name='Относится к ',related_name='cities')
     name = models.CharField('Название города', max_length=255, blank=False, null=True)
     name_lower = models.CharField('Название города', max_length=255, blank=False, null=True,editable=False)
-    price = models.IntegerField('Стоимость доставки',blank=True,null=True)
+    price = models.IntegerField('Стоимость доставки',blank=True,null=True,editable=False)
     code = models.IntegerField('Код города',blank=False,null=True)
 
 
     def __str__(self):
-        return f'{self.name} - стоимость {self.price}'
+        return f'{self.name} - код {self.code}'
 
     def save(self, *args, **kwargs):
         self.name_lower = self.name.lower()
@@ -73,6 +74,7 @@ class City(models.Model):
         super(City, self).save(*args, **kwargs)
 
     class Meta:
+        ordering = ('name', )
         verbose_name = "Город"
         verbose_name_plural = "Города"
 

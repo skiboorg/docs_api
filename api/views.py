@@ -176,23 +176,39 @@ class CreateOrder(APIView):
 
 
 
-        if order_data.get('pay_type')=='online':
-            pay_request(new_order)
+        # if order_data.get('pay_type')=='online':
+        #     pay_request(new_order)
 
 
 
-        # client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
-        # order = {
-        #     'firstName': new_order.fio,
-        #     'lastName': '',
-        #     'phone': new_order.phone,
-        #     'email': new_order.email,
-        #     'items': items,
-        #     'customerComment': new_order.comment,
-        #     'orderMethod': 'call-request',
-        # }
+        client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
+        order = {
+            'firstName': new_order.fio,
+            'lastName': '',
+            'phone': new_order.phone,
+            'email': new_order.email,
+            'items': items,
+            'customerComment': new_order.comment,
+            'orderMethod': 'call-request',
+            'delivery':
+                {
+                    # 'code': 'sdek',
+                    'address':
+                        {
+                            'city': new_order.city.name,
+                            'cityId': new_order.city.code,
+                            'street': new_order.street,
+                            'building': new_order.house,
+                            'flat': new_order.flat,
+                        }
+
+                }
+
+
+        }
         # print(order)
-        # result = client.order_create(order)
+        result = client.order_create(order)
+        print(result.get_errors())
         return Response({'order_code': True}, status=200)
 
 
