@@ -136,7 +136,7 @@ class SubCategory(models.Model):
 
 
 class Collection(models.Model):
-    subcategory = models.ForeignKey(SubCategory, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Относится к')
+    subcategory = models.ManyToManyField(SubCategory, blank=True, verbose_name='Относится к')
     name = models.CharField('Название', max_length=255, blank=True, null=True)
     title = models.CharField('Описание', max_length=255, blank=True, null=True)
     is_show_at_home = models.BooleanField('Отображать на главной', default=False)

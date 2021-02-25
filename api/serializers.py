@@ -75,10 +75,16 @@ class ItemTypeSerializer(serializers.ModelSerializer):
     def get_article(self, obj):
         return obj.item.article
 
+class SubCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
+
 
 class ItemSerializer(serializers.ModelSerializer):
     images = ItemImageSerializer(many=True, read_only=True, required=False)
     types = ItemTypeSerializer(many=True, read_only=True, required=False)
+    subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
     class Meta:
         model = Item
         fields = '__all__'
@@ -90,15 +96,10 @@ class BannerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SubCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubCategory
-        fields = '__all__'
 
 
 class CategorySerializer(serializers.ModelSerializer):
     subcategories = SubCategorySerializer(many=True, read_only=True, required=False)
-
     class Meta:
         model = Category
         fields = '__all__'
@@ -107,14 +108,14 @@ class CategorySerializer(serializers.ModelSerializer):
 class CollectionSerializer(serializers.ModelSerializer):
     collection_items = ItemSerializer(many=True, read_only=True, required=False)
     subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
-    category = serializers.SerializerMethodField()
+    # category = serializers.SerializerMethodField()
     class Meta:
         model = Collection
         fields = '__all__'
 
-    def get_category(self, obj):
-
-        return obj.subcategory.category.name_slug
+    # def get_category(self, obj):
+    #
+    #     return obj.subcategory.category.name_slug
 
 class PromoSerializer(serializers.ModelSerializer):
 
