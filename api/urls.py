@@ -19,6 +19,8 @@ urlpatterns = [
     path('check_ftp', views.CheckFtp.as_view()),
     path('check_ostatok', views.CheckOstatok.as_view()),
     path('calculate_delivery', views.CalculateDelivery.as_view()),
+    path('order_payed', views.OrderPayed.as_view()),
+    path('fill_city', views.FillC.as_view()),
 
 
     path('catalog.xml', views.catalog_feed, name='catalog_feed'),

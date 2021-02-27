@@ -22,6 +22,19 @@ class ItemTypeAdmin(admin.ModelAdmin):
     class Meta:
         model = ItemType
 
+
+class CdekOfficeInline(admin.TabularInline):
+    model = CdekOffice
+    extra = 0
+
+
+class CityAdmin(admin.ModelAdmin):
+    inlines = [CdekOfficeInline]
+    list_filter = ('type',)
+    class Meta:
+        model = City
+
+
 admin.site.register(Banner)
 admin.site.register(Category)
 admin.site.register(SubCategory)
@@ -36,10 +49,12 @@ admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(ItemModification)
 admin.site.register(ItemMaterial)
-admin.site.register(City)
+admin.site.register(City,CityAdmin)
 admin.site.register(DeliveryType)
 admin.site.register(PromoCode)
 admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(CdekKey)
+admin.site.register(CdekOffice)
+admin.site.register(PaymentObj)
 

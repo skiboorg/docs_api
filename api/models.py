@@ -10,40 +10,20 @@ from django.core.files import File
 from .services import image_resize_and_watermark
 
 
-
 class CdekKey(models.Model):
     access_token = models.TextField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class PaymentObj(models.Model):
-    pay_id = models.CharField('ID платежа',max_length=255,blank=True,null=True)
-    pay_code = models.CharField('ID платежа',max_length=255,blank=True,null=True)
-    client = models.ForeignKey('user.User', blank=True, null=True,
-                                  on_delete=models.CASCADE,
-                                  verbose_name='Пользователь')
-    guest = models.ForeignKey('user.Guest', blank=True, null=True,
-                                  on_delete=models.CASCADE,
-                                  verbose_name='Гость')
 
-    type = models.CharField('Вид платежа',max_length=255,blank=True,null=True)
-    status = models.CharField('Статус платежа', max_length=255,blank=True,null=True)
-    amount = models.IntegerField('Сумма платежа', blank=True,null=True)
-    is_payed = models.BooleanField("Оплачен?", default=False)
-    created_at = models.DateTimeField("Дата платежа", auto_now_add=True)
 
-    def __str__(self):
-        return f'Платеж от {self.created_at}. На сумму {self.amount}. Статус {self.status}'
-
-    class Meta:
-        verbose_name = "Платеж"
-        verbose_name_plural = "Платежи"
 
 class DeliveryType(models.Model):
     name = models.CharField('Название типа доставки', max_length=255, blank=False, null=True)
     time = models.CharField('Минимальное время доставки', max_length=255, blank=False, null=True)
     price = models.CharField('Минимальная стоимость доставки', max_length=255, blank=False, null=True)
     is_self_delivery = models.BooleanField('Это самовывоз?', default=False)
+    is_office_cdek = models.BooleanField('Это СДЕК до офиса?', default=False)
     code = models.CharField('Код доставки для CRM', max_length=255, blank=False, null=True)
 
     def __str__(self):
@@ -52,21 +32,23 @@ class DeliveryType(models.Model):
     class Meta:
         ordering = ('-is_self_delivery',)
         verbose_name = "Тип доставки"
-        verbose_name_plural = "Типы доставки"
-
+        verbose_name_plural = "7. Типы доставки"
 
 
 class City(models.Model):
-    type = models.ForeignKey(DeliveryType,on_delete=models.CASCADE,null=True,blank=False,
-                             verbose_name='Относится к ',related_name='cities')
+    type = models.ForeignKey(DeliveryType,
+                             on_delete=models.CASCADE,
+                             null=True,
+                             blank=False,
+                             verbose_name='Относится к',
+                             related_name='cities')
     name = models.CharField('Название города', max_length=255, blank=False, null=True)
     name_lower = models.CharField('Название города', max_length=255, blank=False, null=True,editable=False)
     price = models.IntegerField('Стоимость доставки',blank=True,null=True,editable=False)
     code = models.IntegerField('Код города',blank=False,null=True)
 
-
     def __str__(self):
-        return f'{self.name} - код {self.code}'
+        return f'{self.type.name}  - {self.name} - код {self.code}'
 
     def save(self, *args, **kwargs):
         self.name_lower = self.name.lower()
@@ -76,7 +58,26 @@ class City(models.Model):
     class Meta:
         ordering = ('name', )
         verbose_name = "Город"
-        verbose_name_plural = "Города"
+        verbose_name_plural = "7.1. Города"
+
+
+class CdekOffice(models.Model):
+    city = models.ForeignKey(City,
+                             on_delete=models.CASCADE,
+                             null=True,
+                             blank=False,
+                             verbose_name='Относится к',
+                             related_name='offices')
+    office_id = models.CharField('ID офиса', max_length=255, blank=True, null=True)
+    address = models.CharField('Адрес офиса', max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.office_id} - {self.city.name}'
+
+    class Meta:
+        #ordering = ('name', )
+        verbose_name = "Адрес офиса"
+        verbose_name_plural = "7.2. Адреса офисов СДЕК"
 
 
 class Banner(models.Model):
@@ -509,6 +510,7 @@ class Order(models.Model):
     # total_price_with_code = models.DecimalField('Общая стоимость заказа с учетом промо-кода', decimal_places=2,
     #                                             max_digits=10, default=0)
     weight = models.IntegerField(default=0)
+    delivery_price = models.IntegerField(default=0)
 
     track_code = models.CharField('Трек код', max_length=50, blank=True, null=True)
     order_code = models.CharField('Код заказа', max_length=10, blank=True, null=True)
@@ -524,3 +526,25 @@ class Order(models.Model):
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
 
+class PaymentObj(models.Model):
+    pay_id = models.CharField('ID платежа yandex',max_length=255,blank=True,null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True)
+    client = models.ForeignKey('user.User', blank=True, null=True,
+                                  on_delete=models.CASCADE,
+                                  verbose_name='Пользователь')
+    guest = models.ForeignKey('user.Guest', blank=True, null=True,
+                                  on_delete=models.CASCADE,
+                                  verbose_name='Гость')
+
+    type = models.CharField('Вид платежа',max_length=255,blank=True,null=True)
+    status = models.CharField('Статус платежа', max_length=255,blank=True,null=True)
+    amount = models.IntegerField('Сумма платежа', blank=True,null=True)
+    is_payed = models.BooleanField("Оплачен?", default=False)
+    created_at = models.DateTimeField("Дата платежа", auto_now_add=True)
+
+    def __str__(self):
+        return f'Платеж от {self.created_at}. На сумму {self.amount}. Статус {self.status}'
+
+    class Meta:
+        verbose_name = "Платеж"
+        verbose_name_plural = "Платежи"

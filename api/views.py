@@ -1,22 +1,14 @@
 # coding utf-8
 
-import json
-import retailcrm
 import ftputil
 from django.template import loader, Context
 from django.http import HttpResponse
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from .serializers import *
 from .models import *
-from user.models import Guest
 from .services import *
 from datetime import datetime
-from pycdek3 import Client
-
-
-
 import settings
 
 
@@ -133,6 +125,7 @@ class CreateOrder(APIView):
         print(data)
         session_id = data.get('session_id')
         order_data = data.get('order')
+        delivery_price = data.get('delivery_price')
         cart = check_if_cart_exists(request, session_id)
 
 
@@ -148,6 +141,8 @@ class CreateOrder(APIView):
             city_id=order_data.get('delivery_city') if order_data.get('delivery_city') else None,
             comment=order_data.get('comment'),
             promo_code=cart.promo_code,
+            delivery_price = delivery_price,
+            order_code=''.join(choices(string.ascii_lowercase + string.digits, k=8)),
             weight=cart.weight,
             total_price=cart.total_price
         )
@@ -157,59 +152,22 @@ class CreateOrder(APIView):
             new_order.guest = cart.guest
 
         new_order.save()
-        items=[]
+
         for item in cart.items.all():
             new_order_item = OrderItem.objects.create(item_type=item.item_type,quantity=item.quantity)
             new_order.items.add(new_order_item)
             # item.delete()
-            items.append({
-                'productName': item.item_type.item.name,
-                'initialPrice': item.item_type.item.price,
-                'quantity': item.quantity,
-                'offer': {
-                    'xmlId': f'{item.item_type.item.id_1c.split("#")[0]}#{item.item_type.id_1c}',
-                    # 'id': item.item_type.id
-                }
-            })
+
         cart.promo_code = None
         cart.save()
+        pay_url = None
 
+        if order_data.get('pay_type')=='online':
+            pay_url = pay_request(new_order)
 
-
-        # if order_data.get('pay_type')=='online':
-        #     pay_request(new_order)
-
-
-
-        client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
-        order = {
-            'firstName': new_order.fio,
-            'lastName': '',
-            'phone': new_order.phone,
-            'email': new_order.email,
-            'items': items,
-            'customerComment': new_order.comment,
-            'orderMethod': 'call-request',
-            'delivery':
-                {
-                    # 'code': 'sdek',
-                    'address':
-                        {
-                            'city': new_order.city.name,
-                            'cityId': new_order.city.code,
-                            'street': new_order.street,
-                            'building': new_order.house,
-                            'flat': new_order.flat,
-                        }
-
-                }
-
-
-        }
-        # print(order)
-        result = client.order_create(order)
-        print(result.get_errors())
-        return Response({'order_code': True}, status=200)
+        else:
+            send_order_to_crm(new_order)
+        return Response({'order_code': new_order.order_code, 'pay_url': pay_url}, status=200)
 
 
 class ApplyPromo(APIView):
@@ -384,12 +342,58 @@ class CheckFtp(APIView):
         return Response({'Создано базовых товаров':new_items, 'Обновлено базовый товаров':updated_items},status=200)
 
 
+
 class CalculateDelivery(APIView):
     def get(self, request):
+        print(self.request.query_params)
+        cdek_type = self.request.query_params.get('cdek_type')
         city_code = self.request.query_params.get('city_code')
         weight = self.request.query_params.get('weight')
         access_token = checkCdekToken()
-        price = int(calculateDelivery(access_token, city_code, weight))
-
-
+        print(city_code)
+        price = calculateDelivery(access_token, city_code, weight, cdek_type)
         return Response({'delivery_price':price}, status=200)
+
+
+class OrderPayed(APIView):
+    def post(self,request):
+        data = request.data
+        payment_id = data.get('pay_id')
+        print(payment_id)
+        try:
+            payment = PaymentObj.objects.get(pay_id=payment_id)
+            if not payment.is_payed:
+                payment.is_payed = True
+                payment.save()
+                print('sending to crm',payment.order)
+                send_order_to_crm(payment.order)
+            return Response(status=200)
+        except:
+            return Response(status=201)
+
+class FillC(APIView):
+
+    def get(self,request):
+        from openpyxl import load_workbook
+        wb = load_workbook(filename='off.xlsx')
+        sheet = wb.active
+        max_row = sheet.max_row
+        max_column = sheet.max_column
+        delivery = DeliveryType.objects.get(is_office_cdek=True)
+        for i in range(1, max_row + 1):
+            city = sheet.cell(row=i, column=2).value
+            print(city)
+            c, cret = City.objects.get_or_create(type=delivery,name=city,code=0)
+            if cret:
+                print('double')
+        for i in range(1, max_row + 1):
+            city_name = sheet.cell(row=i, column=2).value
+            city = City.objects.get(name=city_name)
+            code = sheet.cell(row=i, column=1).value
+            addr = sheet.cell(row=i, column=4).value
+            CdekOffice.objects.create(city=city,office_id=code,address=addr)
+            print(addr)
+
+
+
+        return Response(status=200)

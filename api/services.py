@@ -1,5 +1,7 @@
-import json
+# coding utf-8
 
+
+import json
 from user.models import Guest
 import datetime as dt
 from datetime import datetime
@@ -9,8 +11,7 @@ from PIL import Image
 from io import BytesIO
 from yookassa import Configuration, Payment
 from rest_framework.response import Response
-
-
+import retailcrm
 import uuid
 import settings
 
@@ -90,10 +91,7 @@ def image_resize_and_watermark(image,watermarked,new_w,new_h):
 
 def pay_request(order):
     from .models import PaymentObj
-    if order.city:
-        delivery_price = order.city.price
-    else:
-        delivery_price = 0
+    delivery_price = order.delivery_price
     print('delivery_price', delivery_price)
     order_total_price = order.total_price
     amount = order_total_price + delivery_price
@@ -113,17 +111,18 @@ def pay_request(order):
         # },
         "confirmation": {
             "type": "redirect",
-            "return_url": f'{settings.HOST}/lk/balance?pay_id={pay_id}'
+            "return_url": f'{settings.HOST}/payment_complete?pay_id={pay_id}'
         },
         "capture": True,
         "description": f'Оплата заказа ID {order.id}'
     }, pay_id)
 
-    print(payment)
+    print(payment.confirmation.confirmation_url)
 
 
-    new_payment = PaymentObj.objects.create(pay_id=payment.id,
-                                            pay_code=pay_id,
+
+    new_payment = PaymentObj.objects.create(pay_id=pay_id,
+                                            order=order,
                                             amount=amount,
                                             status='Не оплачен')
 
@@ -132,7 +131,7 @@ def pay_request(order):
     else:
         new_payment.guest = order.guest
     new_payment.save()
-    return Response(payment.confirmation.confirmation_url)
+    return payment.confirmation.confirmation_url
 
 def cdekGetToken():
     print('get token')
@@ -164,16 +163,17 @@ def checkCdekToken():
         key.save()
     return access_token
 
-def calculateDelivery(access_token,city_code,weight):
+def calculateDelivery(access_token,city_code,weight,cdek_type):
+    print(cdek_type)
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f"Bearer {access_token}",
     }
     data = {
         "type": "2",
-        "date": "2020-11-03T11:49:32+0700",
+        # "date": "2020-11-03T11:49:32+0700",
         "currency": "1",
-        "tariff_code": "11",
+        "tariff_code": "11" if cdek_type == 'not_office' else "10",
         "from_location": {
             "code": "44"
         },
@@ -189,6 +189,50 @@ def calculateDelivery(access_token,city_code,weight):
     response = requests.post('https://api.cdek.ru/v2/calculator/tariff',
                              headers=headers,
                              data=json.dumps(data))
+    print(response.json())
     return response.json().get('delivery_sum')
 
 
+def send_order_to_crm(order):
+    items = []
+    for item in order.items.all():
+        items.append({
+            'productName': item.item_type.item.name,
+            'initialPrice': item.item_type.item.price,
+            'quantity': item.quantity,
+            'offer': {
+                'xmlId': f'{item.item_type.item.id_1c.split("#")[0]}#{item.item_type.id_1c}',
+                # 'id': item.item_type.id
+            }
+        })
+
+    if not order.delivery.is_self_delivery:
+        delivery = {
+            # 'code': 'sdek',
+            'address':
+                {
+                    'city': order.city.name,
+                    'cityId': order.city.code,
+                    'street': order.street,
+                    'building': order.house,
+                    'flat': order.flat,
+                }
+        }
+    else:
+        delivery = {}
+
+    client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
+    order = {
+        'firstName': order.fio,
+        'lastName': '',
+        'phone': order.phone,
+        'email': order.email,
+        'items': items,
+        'customerComment': order.comment,
+        'orderMethod': 'call-request',
+        'delivery': delivery
+    }
+    print('order',order)
+    result = client.order_create(order)
+    print('result.get_errors()',result.get_errors())
+    return
