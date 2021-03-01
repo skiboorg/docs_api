@@ -283,7 +283,10 @@ class Item(models.Model):
     image_tag.short_description = 'Основная картинка'
 
     def collection_tag(self):
-        return self.collection.name
+        if self.collection:
+            return self.collection.name
+        else:
+            return 'Без коллекции'
     collection_tag.short_description = 'Коллекция'
 
     def save(self, *args, **kwargs):
