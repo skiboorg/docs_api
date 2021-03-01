@@ -171,6 +171,7 @@ class ItemColor(models.Model):
 
 
 class ItemSize(models.Model):
+    order_num = models.IntegerField('Номер по порядку', default=100)
     id_1c = models.CharField('ID 1C', max_length=255, blank=True, null=True)
     name = models.CharField('Размер', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
@@ -184,7 +185,6 @@ class ItemSize(models.Model):
         return f'{self.name}'
 
     class Meta:
-        ordering = ('-name',)
         verbose_name = "Размер"
         verbose_name_plural = "5.1. Размеры"
 
