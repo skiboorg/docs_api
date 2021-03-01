@@ -94,7 +94,7 @@ class Banner(models.Model):
 
 class Category(models.Model):
     name = models.CharField('Название категории', max_length=255, blank=True, null=True)
-    name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False)
+    name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False, db_index=True)
     image = models.ImageField('Изображение категории', upload_to='images/categories/', blank=True)
     is_for_man = models.BooleanField('Для мужчин', default=True)
 
@@ -114,7 +114,7 @@ class SubCategory(models.Model):
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Категория',
                                  related_name='subcategories')
     name = models.CharField('Название подкатегории', max_length=255, blank=True, null=True)
-    name_slug = models.CharField(max_length=255, blank=True, null=True,editable=False)
+    name_slug = models.CharField(max_length=255, blank=True, null=True,editable=False, db_index=True)
     image = models.ImageField('Изображение категории', upload_to='images/subcategories/', blank=True)
     weight = models.IntegerField('Вес товара в г.', blank=True, null=True)
 
@@ -129,7 +129,7 @@ class SubCategory(models.Model):
         super(SubCategory, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.category.name}:{self.name} '
 
     class Meta:
         verbose_name = "Подкатегория"
@@ -137,13 +137,13 @@ class SubCategory(models.Model):
 
 
 class Collection(models.Model):
-    subcategory = models.ManyToManyField(SubCategory, blank=True, verbose_name='Относится к')
+    # subcategory = models.ManyToManyField(SubCategory, blank=True, verbose_name='Относится к')
     name = models.CharField('Название', max_length=255, blank=True, null=True)
     title = models.CharField('Описание', max_length=255, blank=True, null=True)
     is_show_at_home = models.BooleanField('Отображать на главной', default=False)
 
     def __str__(self):
-        return f'Коллекция {self.name} подкатегории {self.subcategory.name}'
+        return f'Коллекция {self.name}'
 
     class Meta:
         verbose_name = "Коллекция"
@@ -183,6 +183,7 @@ class ItemSize(models.Model):
         return f'{self.name}'
 
     class Meta:
+        ordering = ('-name',)
         verbose_name = "Размер"
         verbose_name_plural = "5.1. Размеры"
 
@@ -201,6 +202,7 @@ class ItemHeight(models.Model):
         return f'{self.name}'
 
     class Meta:
+        ordering = ('-name',)
         verbose_name = "Рост"
         verbose_name_plural = "5.2. Рост"
 
@@ -300,7 +302,7 @@ class Item(models.Model):
         super(Item, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.subcategory.category.name}:{self.subcategory.name} - {self.name}'
 
     class Meta:
         verbose_name = "Базовый товар"
@@ -409,7 +411,7 @@ class ItemImage(models.Model):
 
     def save(self, *args, **kwargs):
         self.image_thumb.save(f'{self.item.name_slug}-thumb.jpg',
-                              File(image_resize_and_watermark(self.image, False, 275, 345)), save=False)
+                              File(image_resize_and_watermark(self.image, False, 350, 450)), save=False)
         super(ItemImage, self).save(*args, **kwargs)
 
 
@@ -428,7 +430,7 @@ class PromoCode(models.Model):
 class CartItem(models.Model):
     client = models.ForeignKey('user.User', blank=True, null=True, default=None, on_delete=models.CASCADE)
     guest = models.ForeignKey('user.Guest', blank=True, null=True, default=None, on_delete=models.CASCADE)
-    item_type = models.ForeignKey(ItemType, blank=True, null=True, on_delete=models.CASCADE)
+    item_type = models.ForeignKey(ItemType, blank=True, null=True, on_delete=models.CASCADE, db_index=True)
     quantity = models.IntegerField('Кол-во', blank=True, null=True, default=1)
     price = models.IntegerField(default=0)
 
@@ -452,7 +454,7 @@ class Cart(models.Model):
                               verbose_name='Корзина гостя')
     promo_code = models.ForeignKey(PromoCode, blank=True, null=True, default=None, on_delete=models.CASCADE,
                               verbose_name='Промокод')
-    items = models.ManyToManyField(CartItem, blank=True, verbose_name='Товары')
+    items = models.ManyToManyField(CartItem, blank=True, verbose_name='Товары', db_index=True)
     weight = models.IntegerField(default=0)
     raw_price = models.IntegerField(default=0)
     total_price = models.IntegerField(default=0)

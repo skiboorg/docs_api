@@ -28,10 +28,9 @@ class GetCategories(generics.ListAPIView):
 
 
 class GetSubcategoryItems(generics.ListAPIView):
-    serializer_class = ItemSerializer
+    serializer_class = SimpleItemSerializer
     def get_queryset(self):
-        return Item.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'],
-                                   collection__isnull=True)
+        return Item.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'])
 
 class GetCollections(generics.ListAPIView):
     serializer_class = CollectionSerializer

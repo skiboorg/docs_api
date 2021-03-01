@@ -112,8 +112,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class CollectionSerializer(serializers.ModelSerializer):
-    collection_items = ItemSerializer(many=True, read_only=True, required=False)
-    subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
+    # collection_items = ItemSerializer(many=True, read_only=True, required=False)
+    # subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
     # category = serializers.SerializerMethodField()
     class Meta:
         model = Collection
@@ -122,6 +122,16 @@ class CollectionSerializer(serializers.ModelSerializer):
     # def get_category(self, obj):
     #
     #     return obj.subcategory.category.name_slug
+
+
+class SimpleItemSerializer(serializers.ModelSerializer):
+    images = ItemImageSerializer(many=True, read_only=True, required=False)
+    subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
+    collection = CollectionSerializer(many=False, read_only=True, required=False)
+
+    class Meta:
+        model = Item
+        fields = '__all__'
 
 class PromoSerializer(serializers.ModelSerializer):
 
