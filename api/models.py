@@ -141,6 +141,7 @@ class Collection(models.Model):
     name = models.CharField('Название', max_length=255, blank=True, null=True)
     title = models.CharField('Описание', max_length=255, blank=True, null=True)
     is_show_at_home = models.BooleanField('Отображать на главной', default=False)
+    is_base_collection = models.BooleanField('Это базовая колекция?', default=False)
 
     def __str__(self):
         return f'Коллекция {self.name}'
