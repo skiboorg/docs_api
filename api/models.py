@@ -282,6 +282,10 @@ class Item(models.Model):
 
     image_tag.short_description = 'Основная картинка'
 
+    def collection_tag(self):
+        return self.collection.name
+    collection_tag.short_description = 'Коллекция'
+
     def save(self, *args, **kwargs):
         if self.old_price == 0:
             self.old_price = self.price
