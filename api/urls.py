@@ -5,7 +5,7 @@ urlpatterns = [
     path('get_banners', views.GetBanners.as_view()),
     path('get_delivery', views.GetDelivery.as_view()),
     path('get_categories', views.GetCategories.as_view()),
-    path('get_collections', views.GetCollections.as_view()),
+    path('get_collection_by_slug', views.GetCollectionBySlug.as_view()),
     path('get_home_collections', views.GetHomeCollections.as_view()),
     path('get_subcategory_items', views.GetSubcategoryItems.as_view()),
     path('get_item', views.GetItem.as_view()),

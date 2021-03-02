@@ -139,13 +139,26 @@ class SubCategory(models.Model):
 
 class Collection(models.Model):
     # subcategory = models.ManyToManyField(SubCategory, blank=True, verbose_name='Относится к')
+    order_num = models.IntegerField('Номер по порядку', default=100)
     name = models.CharField('Название', max_length=255, blank=True, null=True)
+    name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False, db_index=True)
     title = models.CharField('Описание', max_length=255, blank=True, null=True)
     is_show_at_home = models.BooleanField('Отображать на главной', default=False)
     is_base_collection = models.BooleanField('Это базовая колекция?', default=False)
 
     def __str__(self):
         return f'Коллекция {self.name}'
+
+    def save(self, *args, **kwargs):
+        slug = slugify(self.name)
+        if not self.name_slug:
+            testSlug = SubCategory.objects.filter(name_slug=slug)
+            slugRandom = ''
+            if testSlug:
+                slugRandom = '-' + ''.join(choices(string.ascii_lowercase + string.digits, k=2))
+            self.name_slug = slug + slugRandom
+        super(Collection, self).save(*args, **kwargs)
+
 
     class Meta:
         verbose_name = "Коллекция"

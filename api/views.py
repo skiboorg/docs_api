@@ -32,14 +32,14 @@ class GetSubcategoryItems(generics.ListAPIView):
     def get_queryset(self):
         return Item.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'])
 
-class GetCollections(generics.ListAPIView):
-    serializer_class = CollectionSerializer
+class GetCollectionBySlug(generics.ListAPIView):
+    serializer_class = CollectionWithItemsSerializer
     def get_queryset(self):
-        return Collection.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'])
+        return Collection.objects.filter(name_slug=self.request.query_params['name_slug'])
 
 
 class GetHomeCollections(generics.ListAPIView):
-    serializer_class = CollectionSerializer
+    serializer_class = CollectionWithItemsSerializer
     def get_queryset(self):
         return Collection.objects.filter(is_show_at_home=True)
 
