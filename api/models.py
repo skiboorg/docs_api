@@ -324,7 +324,10 @@ class Item(models.Model):
         super(Item, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.subcategory.category.name}:{self.subcategory.name} - {self.name}'
+        if self.subcategory:
+            return f'{self.subcategory.category.name}:{self.subcategory.name} - {self.name}'
+        else:
+            return 'НЕТ ПОДКАТЕГОРИИ'
 
     class Meta:
         verbose_name = "Базовый товар"
