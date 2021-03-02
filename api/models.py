@@ -24,6 +24,7 @@ class DeliveryType(models.Model):
     price = models.CharField('Минимальная стоимость доставки', max_length=255, blank=False, null=True)
     is_self_delivery = models.BooleanField('Это самовывоз?', default=False)
     is_office_cdek = models.BooleanField('Это СДЕК до офиса?', default=False)
+    is_active = models.BooleanField('Отображать??', default=True)
     code = models.CharField('Код доставки для CRM', max_length=255, blank=False, null=True)
 
     def __str__(self):
