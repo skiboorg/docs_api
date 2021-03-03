@@ -52,6 +52,17 @@ class GetItem(generics.RetrieveAPIView):
         item = Item.objects.get(name_slug=base_item_slug)
         return item
 
+class GetRecommendedItems(generics.ListAPIView):
+    serializer_class = RecItemSerializer
+
+    def get_queryset(self):
+        base_item_slug = self.request.query_params['base_item_slug']
+        item = Item.objects.get(name_slug=base_item_slug)
+        subcat = item.subcategory
+        items = subcat.subcategory_items.all().exclude(id=item.id)[:3]
+        print(items)
+        return items
+
 class GetItem_old(APIView):
     def get(self,request):
         colors = []
@@ -273,6 +284,8 @@ class CheckFtp(APIView):
         root = tree.getroot()
         new_items = 0
         updated_items = 0
+        new_items_types = 0
+        updated_items_types = 0
         for element in root:
             item_id = element.find("basic_item").text
             item_name = element.find("name").text
@@ -286,59 +299,77 @@ class CheckFtp(APIView):
             item.price = item_price
             item.save()
 
-        # tree = etree.parse('vigruzka.xml')
-        # root = tree.getroot()
+        tree = etree.parse('vigruzka.xml')
+        root = tree.getroot()
 
-        # for element in root:
-        #     basic_item_id = element.find("basic_item").text
-        #     base_item, created = Item.objects.get_or_create(id_1c=basic_item_id)
-        #
-        #     color_id = element.find("color").text
-        #     color, created = ItemColor.objects.get_or_create(id_1c=color_id)
-        #     if created:
-        #         color.name = 'Новый цвет'
-        #         color.save()
-        #
-        #     size_name = element.find("size").text
-        #     size, created = ItemSize.objects.get_or_create(name=size_name)
-        #     if created:
-        #         size.name = size_name
-        #         size.save()
-        #
-        #     height_name = element.find("height").text
-        #     height, created = ItemHeight.objects.get_or_create(name=height_name)
-        #     if created:
-        #         height.name = height_name
-        #         height.save()
-        #
-        #     add_name = element.find("add").text
-        #     if add_name == '0':
-        #         add_name = 'Нет модификации'
-        #     mod, created = ItemModification.objects.get_or_create(name=add_name)
-        #     if created:
-        #         if add_name == '0':
-        #             add_name = 'Нет модификации'
-        #         mod.name = add_name
-        #         mod.save()
-        #
-        #     cloth_name = element.find("cloth").text
-        #     material, created = ItemMaterial.objects.get_or_create(name=cloth_name)
-        #     if created:
-        #         material.name = cloth_name
-        #         material.save()
-        #
-        #     item_id = element.find("item_id").text
-        #     item_type, created = ItemType.objects.get_or_create(id_1c=item_id)
-        #     if created:
-        #         item_type.item = base_item
-        #         item_type.color = color
-        #         item_type.size = size
-        #         item_type.height = height
-        #         item_type.material = material
-        #         item_type.modification = mod
-        #         item_type.save()
+        for element in root:
+            basic_item_id = element.find("basic_item").text
+            base_item = None
+            try:
+                base_item = Item.objects.get(id_1c=basic_item_id)
+            except Item.DoesNotExist:
+                print('BASE ITEM NOT EXIST. ABORT')
+                base_item = None
 
-        return Response({'Создано базовых товаров':new_items, 'Обновлено базовый товаров':updated_items},status=200)
+
+            color_id = element.find("color").text
+            color, created = ItemColor.objects.get_or_create(id_1c=color_id)
+            if created:
+                color.add_id = color_id
+                color.name = 'Новый цвет'
+                color.save()
+
+            size_name = element.find("size").text
+            size, created = ItemSize.objects.get_or_create(name=size_name)
+            if created:
+                size.name = size_name
+                size.save()
+
+            height_name = element.find("height").text
+            height, created = ItemHeight.objects.get_or_create(name=height_name)
+            if created:
+                height.name = height_name
+                height.save()
+
+            add_id = element.find("add").text
+            if not add_id:
+                add_id = 0
+
+            mod, created = ItemModification.objects.get_or_create(id_1c=add_id)
+            if created:
+                mod.id_1c = add_id
+                mod.name = 'Новая модификация'
+                mod.save()
+
+            cloth_id = element.find("cloth").text
+            material, created = ItemMaterial.objects.get_or_create(id_1c=cloth_id)
+            if created:
+                material.id_1c = cloth_id
+                material.name = 'Новая ткань'
+                material.save()
+
+            item_id = element.find("item_id").text
+
+
+            if base_item:
+                item_type, created = ItemType.objects.get_or_create(id_1c=item_id)
+                if created:
+                    new_items_types += 1
+                item_type.item = base_item
+                item_type.color = color
+                item_type.size = size
+                item_type.height = height
+                item_type.material = material
+                item_type.modification = mod
+                item_type.save()
+                updated_items_types += 1
+
+        return Response({'Создано базовых товаров':new_items,
+                         'Обновлено базовый товаров':updated_items,
+                         'Создано типов товаров':new_items_types,
+                         'Обновлено типов товаров':updated_items_types,
+                         },
+                        status=200)
 
 
 

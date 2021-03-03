@@ -9,6 +9,7 @@ urlpatterns = [
     path('get_home_collections', views.GetHomeCollections.as_view()),
     path('get_subcategory_items', views.GetSubcategoryItems.as_view()),
     path('get_item', views.GetItem.as_view()),
+    path('get_recomended_items', views.GetRecommendedItems.as_view()),
     path('get_cart', views.GetCart.as_view()),
     path('add_to_cart', views.AddToCart.as_view()),
     path('delete_item', views.DeleteItem.as_view()),

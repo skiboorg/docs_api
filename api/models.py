@@ -376,7 +376,8 @@ class ItemType(models.Model):
     color_tag.short_description = 'Цвет'
 
     def article_tag(self):
-        return self.item.article
+        if self.item:
+            return self.item.article
     article_tag.short_description = 'Артикул'
 
     def name_tag(self):

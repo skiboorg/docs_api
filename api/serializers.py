@@ -97,7 +97,19 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_category(self, obj):
+
         return obj.subcategory.category.name_slug
+
+
+class RecItemSerializer(serializers.ModelSerializer):
+    images = ItemImageSerializer(many=True, read_only=True, required=False)
+    types = ItemTypeSerializer(many=True, read_only=True, required=False)
+    subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
+
+    class Meta:
+        model = Item
+        fields = '__all__'
+
 
 
 
