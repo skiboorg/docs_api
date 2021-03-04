@@ -33,7 +33,7 @@ class User(AbstractUser):
     username = None
     first_name = None
     last_name = None
-    email = models.EmailField('Эл. почта', unique=True)
+    email = models.EmailField('Эл. почта',blank=True, unique=True)
     is_vip = models.BooleanField('Вип?', default=False)
     fio = models.CharField('ФИО', max_length=50, blank=True, null=True)
     phone = models.CharField('Телефон', max_length=50, blank=True, null=True)

@@ -12,6 +12,10 @@ from datetime import datetime
 import settings
 
 
+class GetUserOrders(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    def get_queryset(self):
+        return Order.objects.filter(client_id=self.request.query_params.get('user_id'))
 class GetDelivery(generics.ListAPIView):
     serializer_class = DeliverySerializer
     queryset = DeliveryType.objects.all()

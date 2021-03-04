@@ -169,6 +169,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True, required=False)
     total_price = serializers.SerializerMethodField()
@@ -208,3 +209,17 @@ class CartSerializer(serializers.ModelSerializer):
 
         obj.save()
         return total_price
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    item_type = ItemTypeSerializer(many=False, required=False, read_only=True)
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, required=False, read_only=True)
+    city = CitySerializer(many=False, required=False, read_only=True)
+    class Meta:
+        model = Order
+        fields = '__all__'
+

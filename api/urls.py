@@ -22,6 +22,7 @@ urlpatterns = [
     path('calculate_delivery', views.CalculateDelivery.as_view()),
     path('order_payed', views.OrderPayed.as_view()),
     path('fill_city', views.FillC.as_view()),
+    path('get_user_orders', views.GetUserOrders.as_view()),
 
 
     path('catalog.xml', views.catalog_feed, name='catalog_feed'),
