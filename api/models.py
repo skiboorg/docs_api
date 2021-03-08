@@ -95,9 +95,11 @@ class Banner(models.Model):
 
 class Category(models.Model):
     name = models.CharField('Название категории', max_length=255, blank=True, null=True)
+    string = models.CharField('Текст в бегущей строке', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False, db_index=True)
     image = models.ImageField('Изображение категории', upload_to='images/categories/', blank=True)
     is_for_man = models.BooleanField('Для мужчин', default=True)
+    is_at_home = models.BooleanField('Показывать на главной', default=False)
 
     def save(self, *args, **kwargs):
         self.name_slug = slugify(self.name)
@@ -189,6 +191,7 @@ class ItemSize(models.Model):
     id_1c = models.CharField('ID 1C', max_length=255, blank=True, null=True)
     name = models.CharField('Размер', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
+
 
     def save(self, *args, **kwargs):
         if self.name:
