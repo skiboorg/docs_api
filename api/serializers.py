@@ -127,9 +127,21 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
+class CollectionItemSerializer(serializers.ModelSerializer):
+    images = ItemImageSerializer(many=True, read_only=True, required=False)
+    subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
+    category = serializers.SerializerMethodField()
+    class Meta:
+        model = Item
+        fields = '__all__'
+
+    def get_category(self, obj):
+        return obj.subcategory.category.name_slug
+
+
 
 class CollectionWithItemsSerializer(serializers.ModelSerializer):
-    collection_items = ItemSerializer(many=True, read_only=True, required=False)
+    collection_items = CollectionItemSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = Collection
