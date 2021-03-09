@@ -271,7 +271,7 @@ class CheckOstatok(APIView):
                 item.quantity = int(quantity)
                 item.save()
                 items += 1
-            except ItemType.DoesNotExist:
+            except:
                 pass
         return Response({'Обновлено остатков':items},status=200)
 
