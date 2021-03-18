@@ -3,9 +3,13 @@ from .models import *
 
 
 class CdekOfficeSerializer(serializers.ModelSerializer):
+    city_code = serializers.SerializerMethodField()
     class Meta:
         model = CdekOffice
         fields = '__all__'
+    def get_city_code(self, obj):
+        return obj.city.code
+
 
 class CitySerializer(serializers.ModelSerializer):
     offices = CdekOfficeSerializer(many=True, read_only=True, required=False)

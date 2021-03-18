@@ -229,7 +229,7 @@ def send_order_to_crm(order):
         'email': order.email,
         'items': items,
         'customerComment': order.comment,
-        'orderMethod': 'call-request',
+        'orderMethod': 'site',
         'delivery': delivery
     }
     print('order',order)

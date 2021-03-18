@@ -11,6 +11,39 @@ from .services import *
 from datetime import datetime
 import settings
 
+#from openpyxl import load_workbook
+
+# class Test(APIView):
+#     def get(self, request):
+#
+#         cities = City.objects.all()
+#         for c in cities:
+#             City.objects.create(name=c.name,code=c.code,type_id=1)
+#
+#         return Response(status=200)
+
+# class Test(APIView):
+#     def get(self, request):
+#         wb = load_workbook(filename='citie.xlsx')
+#         sheet = wb.active
+#
+#         max_row = sheet.max_row
+#
+#         max_column = sheet.max_column
+#         ii=0
+#         for i in range(2, max_row + 1):
+#             city_id = sheet.cell(row=i, column=1).value
+#             city = sheet.cell(row=i, column=3).value
+#             try:
+#                 city_in_db = City.objects.get(name=city,type__is_office_cdek=True)
+#                 city_in_db.code = city_id
+#                 city_in_db.save()
+#                 print('found')
+#             except:
+#
+#                 print('not f')
+#         print(ii)
+#         return Response(status=200)
 
 class GetUserOrders(generics.ListAPIView):
     serializer_class = OrderSerializer
@@ -248,6 +281,7 @@ def catalog_feed(request,):
     t = loader.get_template('catalog.xml')
     c = template_vars
     return HttpResponse(t.render(c),content_type='text/xml')
+
 
 class CheckOstatok(APIView):
     def get(self, request):
