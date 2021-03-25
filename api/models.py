@@ -100,6 +100,7 @@ class Category(models.Model):
     image = models.ImageField('Изображение категории', upload_to='images/categories/', blank=True)
     is_for_man = models.BooleanField('Для мужчин', default=True)
     is_at_home = models.BooleanField('Показывать на главной', default=False)
+    is_at_menu = models.BooleanField('Показывать в меню', default=True)
 
     def save(self, *args, **kwargs):
         self.name_slug = slugify(self.name)
