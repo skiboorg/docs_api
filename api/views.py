@@ -11,6 +11,15 @@ from .services import *
 from datetime import datetime
 import settings
 
+
+class Test(APIView):
+
+    def get(self, request):
+        items = ItemImage.objects.all()
+        for item in items:
+            item.save()
+
+        return Response(status=200)
 #from openpyxl import load_workbook
 
 # class Test(APIView):

@@ -294,7 +294,7 @@ class Item(models.Model):
     def image_tag(self):
         # used in the admin site model as a "thumbnail"
         if self.images.first():
-            return mark_safe('<img src="{}" width="100" height="100" />'.format(self.images.first().image.url))
+            return mark_safe('<img src="{}" width="100" height="100" />'.format(self.images.first().image_thumb.url))
         else:
             return mark_safe('<span>НЕТ МИНИАТЮРЫ</span>')
 
@@ -416,7 +416,8 @@ class ItemType(models.Model):
 
 
 class ItemImage(models.Model):
-    item = models.ForeignKey(Item, blank=True, null=True, on_delete=models.CASCADE, verbose_name='К товару', related_name='images')
+    item = models.ForeignKey(Item, blank=True, null=True, on_delete=models.CASCADE, verbose_name='К товару',
+                             related_name='images')
     image = models.ImageField('Изображение товара', upload_to='images/catalog/items/', blank=True)
     image_thumb = models.ImageField('Изображение товара', upload_to='images/catalog/items/', blank=True, editable=False)
     color = models.ForeignKey(ItemColor, on_delete=models.SET_NULL, verbose_name='Цвет', blank=True, null=True)
@@ -433,7 +434,7 @@ class ItemImage(models.Model):
     def image_tag(self):
         # used in the admin site model as a "thumbnail"
         if self.image:
-            return mark_safe('<img src="{}" width="150" height="150" />'.format(self.image.url))
+            return mark_safe('<img src="{}" width="150" height="150" />'.format(self.image_thumb.url))
         else:
             return mark_safe('<span>НЕТ МИНИАТЮРЫ</span>')
 
