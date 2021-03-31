@@ -232,7 +232,10 @@ def send_order_to_crm(order):
         'items': items,
         'customerComment': order.comment,
         # 'orderMethod': 'site',
-        'source': 'site',
+        'source': {
+            'source': 'site',
+        },
+
         'delivery': delivery
     }
 
