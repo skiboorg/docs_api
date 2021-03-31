@@ -222,6 +222,7 @@ def send_order_to_crm(order):
         delivery = {}
 
     client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
+
     order = {
         'firstName': order.fio,
         'lastName': '',
@@ -230,9 +231,11 @@ def send_order_to_crm(order):
         'items': items,
         'customerComment': order.comment,
         'orderMethod': 'site',
+        'source': 'site',
         'delivery': delivery
     }
-    print('order',order)
+
+    print('order', order)
     result = client.order_create(order)
-    print('result.get_errors()',result.get_errors())
+    print('result.get_errors()', result.get_errors())
     return
