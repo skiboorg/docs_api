@@ -195,6 +195,7 @@ def calculateDelivery(access_token,city_code,weight,cdek_type):
 
 def send_order_to_crm(order):
     items = []
+    print('sending to crm')
     for item in order.items.all():
         items.append({
             'productName': item.item_type.item.name,
@@ -230,7 +231,7 @@ def send_order_to_crm(order):
         'email': order.email,
         'items': items,
         'customerComment': order.comment,
-        'orderMethod': 'site',
+        # 'orderMethod': 'site',
         'source': 'site',
         'delivery': delivery
     }
@@ -238,4 +239,6 @@ def send_order_to_crm(order):
     print('order', order)
     result = client.order_create(order)
     print('result.get_errors()', result.get_errors())
+    print('result.get_status_code()', result.get_status_code())
+    print('result.get_response()', result.get_response())
     return
