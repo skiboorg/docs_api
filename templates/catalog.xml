@@ -20,7 +20,7 @@
                         <purchasePrice>{{ item_type.item.price }}</purchasePrice>
                         <categoryId>{{ item_type.item.subcategory.id }}</categoryId>
                         {% for image in item_type.item.images.all %}
-                            <picture>{{ base_url }}{{ image.image.url }}</picture>
+                            <picture>{{ base_url }}:8000{{ image.image.url }}</picture>
                         {% endfor %}
                         <name>{{ item_type.item.name }}</name>
                         <xmlId>{{ item_type.item.id_1c | split_id}}#{{ item_type.id_1c }}</xmlId>
