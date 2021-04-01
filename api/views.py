@@ -212,7 +212,7 @@ class CreateOrder(APIView):
         for item in cart.items.all():
             new_order_item = OrderItem.objects.create(item_type=item.item_type,quantity=item.quantity)
             new_order.items.add(new_order_item)
-            # item.delete()
+            item.delete()
 
         cart.promo_code = None
         cart.save()

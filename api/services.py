@@ -209,7 +209,7 @@ def send_order_to_crm(order):
 
     if not order.delivery.is_self_delivery:
         delivery = {
-            # 'code': 'sdek',
+            'code': 'sdek',
             'address':
                 {
                     'city': order.city.name,
