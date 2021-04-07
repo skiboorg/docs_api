@@ -101,10 +101,40 @@ def pay_request(order):
     Configuration.account_id = settings.YA_SHOP_ID
     Configuration.secret_key = settings.YA_API
     pay_id = uuid.uuid4()
+    items = []
+
+    for item in order.items:
+        items.append({
+                    "description": item.item_type.item.name,
+                    "quantity": item.quantity,
+                    "amount": {
+                        "value": item.price,
+                        "currency": "RUB"
+                    },
+                    "vat_code": "2",
+                    "payment_mode": "full_prepayment",
+                    "payment_subject": "commodity"
+                })
+
+        # vat_code
+        # 1        Без        НДС
+        # 2        НДС        по        ставке        0 %
+        # 3        НДС        по        ставке        10 %
+        # 4        НДС        чека        по        ставке        20 %
+        # 5        НДС        чека        по        расчетной        ставке        10 / 110
+        # 6        НДС        чека        по        расчетной        ставке        20 / 120
+
     payment = Payment.create({
         "amount": {
             "value": amount,
             "currency": "RUB"
+        },
+        "receipt": {
+            "customer": {
+                "full_name": order.fio,
+                "phone": order.phone
+            },
+            "items": items
         },
         # "payment_method": {
         #     "type": payment_type,

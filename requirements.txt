@@ -11,3 +11,5 @@ retailcrm
 pycdek3
 yookassa
 openpyxl
+celery
+redis

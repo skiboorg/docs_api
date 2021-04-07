@@ -5,9 +5,9 @@
         <company>Интернет-магазин</company>
         <categories>
             {% for category in categories %}
-                <category id="{{ category.id }}">{{ category.name }}</category>
+                <category id="{{ category.uid }}">{{ category.name }}</category>
                 {% for subcategory in  category.subcategories.all%}
-                    <category id="{{ subcategory.id }}" parentId="{{ subcategory.category.id }}">{{ subcategory.name }}</category>
+                    <category id="{{ subcategory.uid }}" parentId="{{ subcategory.category.uid }}">{{ subcategory.name }}</category>
                 {% endfor %}
             {% endfor %}
         </categories>

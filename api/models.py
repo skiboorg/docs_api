@@ -94,6 +94,7 @@ class Banner(models.Model):
 
 
 class Category(models.Model):
+    uid =models.IntegerField('UID', default=0)
     name = models.CharField('Название категории', max_length=255, blank=True, null=True)
     string = models.CharField('Текст в бегущей строке', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False, db_index=True)
@@ -115,6 +116,7 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
+    uid = models.IntegerField('UID', default=0)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Категория',
                                  related_name='subcategories')
     name = models.CharField('Название подкатегории', max_length=255, blank=True, null=True)
