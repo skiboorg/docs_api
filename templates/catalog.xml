@@ -18,7 +18,7 @@
                         <url>{{ base_url }}{{ item_type.get_path }}</url>
                         <price>{{ item_type.item.price }}</price>
                         <purchasePrice>{{ item_type.item.price }}</purchasePrice>
-                        <categoryId>{{ item_type.item.subcategory.id }}</categoryId>
+                        <categoryId>{{ item_type.item.subcategory.uid }}</categoryId>
                         {% for image in item_type.item.images.all %}
                             <picture>{{ base_url }}:8000{{ image.image.url }}</picture>
                         {% endfor %}
