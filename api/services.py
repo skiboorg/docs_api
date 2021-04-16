@@ -103,7 +103,7 @@ def pay_request(order):
     pay_id = uuid.uuid4()
     items = []
 
-    for item in order.items:
+    for item in order.items.all():
         items.append({
                     "description": item.item_type.item.name,
                     "quantity": item.quantity,
