@@ -316,8 +316,9 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         if self.old_price == 0:
             self.old_price = self.price
+
         if self.discount > 0:
-            self.old_price = self.price
+            self.old_price = 0
             self.price = self.price - (self.price * self.discount / 100)
         else:
             self.price = self.old_price
