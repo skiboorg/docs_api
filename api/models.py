@@ -295,8 +295,12 @@ class Item(models.Model):
 
     def image_tag(self):
         # used in the admin site model as a "thumbnail"
-        if self.images.first():
-            return mark_safe('<img src="{}" width="100" height="100" />'.format(self.images.first().image_thumb.url))
+        try:
+            preview = self.images.get(is_preview=True)
+        except:
+            preview = self.images.filter(is_preview=True).first()
+        if preview:
+            return mark_safe('<img src="{}" width="100" height="100" />'.format(preview.image_thumb.url))
         else:
             return mark_safe('<span>НЕТ МИНИАТЮРЫ</span>')
 
@@ -425,6 +429,7 @@ class ItemImage(models.Model):
     color = models.ForeignKey(ItemColor, on_delete=models.SET_NULL, verbose_name='Цвет', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_preview = models.BooleanField('Это превью', default=False)
 
     def __str__(self):
         return '%s Изображение для товара : %s ' % (self.id, self.item.name)

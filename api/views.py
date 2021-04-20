@@ -10,7 +10,7 @@ from .models import *
 from .services import *
 from datetime import datetime
 import settings
-
+from user.models import User
 
 class Test(APIView):
 
@@ -184,6 +184,12 @@ class CreateOrder(APIView):
         delivery_price = data.get('delivery_price')
         cart = check_if_cart_exists(request, session_id)
 
+        need_register = order_data.get('need_register')
+        if need_register:
+            user = User.objects.create_user(order_data.get('email'), '0000')
+            user.fio = order_data.get('fio')
+            user.phone = order_data.get('phone')
+            user.save()
 
         new_order = Order.objects.create(
             payment=order_data.get('pay_type'),

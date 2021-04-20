@@ -250,7 +250,9 @@ def send_order_to_crm(order):
                 }
         }
     else:
-        delivery = {}
+        delivery = {
+            'code': 'self-delivery'
+        }
 
     client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
 

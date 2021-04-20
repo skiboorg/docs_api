@@ -21,9 +21,11 @@ class UserUpdate(APIView):
 
     def post(self, request):
         user = request.user
-        print(json.loads(request.data['userData']))
-        print(request.FILES)
-        serializer = UserSerializer(user, data=json.loads(request.data['userData']))
+        userData = json.loads(request.data['userData'])
+        serializer = UserSerializer(user, data=userData)
+        if userData.get('pass') != '':
+            user.set_password(userData.get('pass'))
+            user.save()
         if serializer.is_valid():
             serializer.save()
             for f in request.FILES.getlist('avatar'):
@@ -31,8 +33,9 @@ class UserUpdate(APIView):
                 user.save(force_update=True)
             return Response(status=200)
         else:
-            print(serializer.errors)
             return Response(status=400)
+
+
 class GetUser(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
