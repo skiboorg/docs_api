@@ -444,16 +444,16 @@ class OrderPayed(APIView):
         data = request.data
         payment_id = data.get('pay_id')
         print(payment_id)
-        try:
-            payment = PaymentObj.objects.get(pay_id=payment_id)
-            if not payment.is_payed:
-                payment.is_payed = True
-                payment.save()
-                print('sending to crm',payment.order)
-                send_order_to_crm(payment.order)
-            return Response(status=200)
-        except:
-            return Response(status=201)
+        # try:
+        payment = PaymentObj.objects.get(pay_id=payment_id)
+        if not payment.is_payed:
+            payment.is_payed = True
+            payment.save()
+            print('sending to crm',payment.order)
+            send_order_to_crm(payment.order)
+        return Response(status=200)
+        # except:
+        #     return Response(status=201)
 
 class FillC(APIView):
 
