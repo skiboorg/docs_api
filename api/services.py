@@ -258,7 +258,11 @@ def send_order_to_crm(order):
 
     order = {
         'payments': {
-          'status': 'paid'
+            {
+                'type': 'site-u-kassa',
+                'status': 'paid'
+            },
+
         },
         'firstName': order.fio,
         'lastName': '',
