@@ -585,7 +585,7 @@ class PaymentObj(models.Model):
     created_at = models.DateTimeField("Дата платежа", auto_now_add=True)
 
     def __str__(self):
-        return f'Платеж от {self.created_at}. На сумму {self.amount}. Статус {self.status}'
+        return f'Платеж от {self.created_at}. На сумму {self.amount}. Статус {self.is_payed}'
 
     class Meta:
         verbose_name = "Платеж"
