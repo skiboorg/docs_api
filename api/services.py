@@ -257,13 +257,14 @@ def send_order_to_crm(order):
     client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
 
     order = {
-        'payments': {
+        'payments': [
             {
                 'type': 'site-u-kassa',
                 'status': 'paid'
-            },
+            }
 
-        },
+
+        ],
         'firstName': order.fio,
         'lastName': '',
         'phone': order.phone,
