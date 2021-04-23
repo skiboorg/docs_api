@@ -31,6 +31,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
             settings.LOGIN_FIELD,
             User._meta.pk.name,
             "password",
+            "fio",
+            "phone",
         )
 
     def validate(self, attrs):
