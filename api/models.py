@@ -375,7 +375,10 @@ class ItemType(models.Model):
         verbose_name_plural = "5. Виды товаров"
 
     def get_path(self):
-        return f'/category/{self.item.subcategory.category.name_slug}/{self.item.subcategory.name_slug}/{self.item.name_slug}'
+        try:
+            return f'/category/{self.item.subcategory.category.name_slug}/{self.item.subcategory.name_slug}/{self.item.name_slug}'
+        except:
+            return ''
     #
     # def save(self, *args, **kwargs):
     #
