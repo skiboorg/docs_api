@@ -62,6 +62,17 @@ class ItemImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ItemTypeSiteMapSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+    class Meta:
+        model = ItemType
+        fields = ['url']
+
+    def get_url(self,obj):
+        if obj.get_path():
+            return obj.get_path()
+
+
 class ItemTypeSerializer(serializers.ModelSerializer):
     # item = ItemSerializer(many=False, read_only=True, required=False)
     color = ItemColorSerializer(many=False, read_only=True, required=False)

@@ -63,6 +63,10 @@ class GetDelivery(generics.ListAPIView):
     queryset = DeliveryType.objects.all()
 
 
+class GetItems(generics.ListAPIView):
+    serializer_class = ItemTypeSiteMapSerializer
+    queryset = ItemType.objects.all()
+
 class GetBanners(generics.ListAPIView):
     serializer_class = BannerSerializer
     queryset = Banner.objects.all()
@@ -76,7 +80,11 @@ class GetCategories(generics.ListAPIView):
 class GetSubcategoryItems(generics.ListAPIView):
     serializer_class = SimpleItemSerializer
     def get_queryset(self):
-        return Item.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'])
+        items = Item.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'])
+        if items:
+            return items
+        else:
+            return Response(status=404)
 
 class GetCollectionBySlug(generics.ListAPIView):
     serializer_class = CollectionWithItemsSerializer

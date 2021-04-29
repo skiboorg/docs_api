@@ -348,6 +348,7 @@ class Item(models.Model):
 
 class ItemType(models.Model):
     id_1c = models.CharField('ID 1C', max_length=255, blank=True, null=True)
+    bar_cade = models.CharField('Штрихкод', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True,editable=False)
     item = models.ForeignKey(Item, verbose_name='Базовый товар',
                                     on_delete=models.CASCADE, blank=True,null=True,db_index=True,
