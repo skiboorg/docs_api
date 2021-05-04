@@ -112,7 +112,6 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_category(self, obj):
-
         return obj.subcategory.category.name_slug
 
 
@@ -124,6 +123,8 @@ class RecItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = '__all__'
+
+
 
 
 
@@ -174,12 +175,21 @@ class CollectionSerializer(serializers.ModelSerializer):
 
 class SimpleItemSerializer(serializers.ModelSerializer):
     images = ItemImageSerializer(many=True, read_only=True, required=False)
+    image = serializers.SerializerMethodField()
     subcategory = SubCategorySerializer(many=False, read_only=True, required=False)
     collection = CollectionSerializer(many=False, read_only=True, required=False)
 
     class Meta:
         model = Item
         fields = '__all__'
+    def get_image(self,obj):
+        try:
+            img = self.context['request'].build_absolute_uri(obj.images.get(is_preview=True).image_thumb.url)
+        except:
+            img = self.context['request'].build_absolute_uri(obj.images.first().image_thumb.url)
+
+
+        return img
 
 class PromoSerializer(serializers.ModelSerializer):
 

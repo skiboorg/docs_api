@@ -7,7 +7,7 @@ class ImagesInline (admin.TabularInline):
     extra = 0
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ['image_tag','collection_tag', 'name', 'article', 'price', 'is_active','is_in_feed']
+    list_display = ['image_tag','collection_tag', 'name', 'article', 'price', 'is_active','is_in_feed','discount']
     inlines = [ImagesInline]
     list_filter = ('is_active', 'is_in_feed','collection',)
     class Meta:

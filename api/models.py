@@ -96,6 +96,7 @@ class Banner(models.Model):
 class Category(models.Model):
     uid =models.IntegerField('UID', default=0)
     name = models.CharField('Название категории', max_length=255, blank=True, null=True)
+
     string = models.CharField('Текст в бегущей строке', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False, db_index=True)
     image = models.ImageField('Изображение категории', upload_to='images/categories/', blank=True)
@@ -104,6 +105,7 @@ class Category(models.Model):
     is_at_menu = models.BooleanField('Показывать в меню', default=True)
 
     def save(self, *args, **kwargs):
+
         self.name_slug = slugify(self.name)
         super(Category, self).save(*args, **kwargs)
 
@@ -119,12 +121,19 @@ class SubCategory(models.Model):
     uid = models.IntegerField('UID', default=0)
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Категория',
                                  related_name='subcategories')
+    discount = models.IntegerField('Скидка', default=0)
     name = models.CharField('Название подкатегории', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True,editable=False, db_index=True)
     image = models.ImageField('Изображение категории', upload_to='images/subcategories/', blank=True)
     weight = models.IntegerField('Вес товара в г.', blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        items = self.subcategory_items.all()
+        for item in items:
+            if item.discount == 0:
+                item.discount=self.discount
+                item.save()
+
         slug = slugify(self.name)
         if not self.name_slug:
             testSlug = SubCategory.objects.filter(name_slug=slug)
@@ -146,6 +155,7 @@ class Collection(models.Model):
     # subcategory = models.ManyToManyField(SubCategory, blank=True, verbose_name='Относится к')
     order_num = models.IntegerField('Номер по порядку', default=100)
     name = models.CharField('Название', max_length=255, blank=True, null=True)
+    discount = models.IntegerField('Скидка', default=0)
     name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False, db_index=True)
     title = models.CharField('Описание', max_length=255, blank=True, null=True)
     is_show_at_home = models.BooleanField('Отображать на главной', default=False)
@@ -155,6 +165,11 @@ class Collection(models.Model):
         return f'Коллекция {self.name}'
 
     def save(self, *args, **kwargs):
+        items = self.collection_items.all()
+        for item in items:
+            if item.discount == 0:
+                item.discount = self.discount
+                item.save()
         slug = slugify(self.name)
         if not self.name_slug:
             testSlug = SubCategory.objects.filter(name_slug=slug)
@@ -275,10 +290,11 @@ class Item(models.Model):
     name = models.CharField('Название товара', max_length=255, blank=True, null=True)
     name_lower = models.CharField(max_length=255, blank=True, null=True,default='',editable=False)
     name_slug = models.CharField(max_length=255, blank=True, null=True,db_index=True)
-    old_price = models.IntegerField('Цена без скидки', blank=True, default=0, editable=False)
+    old_price = models.IntegerField('Цена без скидки', blank=True, default=0, editable=True)
     price = models.IntegerField('Цена', blank=True, default=0, db_index=True)
     article = models.CharField('Артикул', max_length=50, blank=True, null=True)
     discount = models.IntegerField('Скидка', default=0)
+    discount_val = models.IntegerField('Скидка', default=0, editable=False)
     short_description = models.TextField('Короткое описание', blank=True, null=True)
 
     description = RichTextUploadingField('Тект для вкладки Детали', blank=True, null=True)
@@ -318,11 +334,13 @@ class Item(models.Model):
             self.old_price = self.price
 
         if self.discount > 0:
+            self.discount_val = self.discount
             self.old_price = self.price
             self.price = self.price - (self.price * self.discount / 100)
         else:
-            if self.price == self.old_price:
-                self.price = self.old_price
+            self.price = self.price + (self.old_price * self.discount_val / 100)
+            self.discount_val = 0
+
 
         slug = slugify(self.name)
         if self.name and not self.name_slug:
