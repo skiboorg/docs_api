@@ -281,6 +281,7 @@ class ItemModification(models.Model):
 
 class Item(models.Model):
     id_1c = models.CharField('ID 1C', max_length=255, blank=True, null=True)
+    order_num = models.IntegerField('Номер по порядку', default=100)
     subcategory = models.ForeignKey(SubCategory, verbose_name='Подкатегория',
                                    on_delete=models.SET_NULL, blank=True, null=True, db_index=True,
                                    related_name='subcategory_items')
@@ -360,6 +361,7 @@ class Item(models.Model):
             return 'НЕТ ПОДКАТЕГОРИИ'
 
     class Meta:
+        ordering = ('order_num',)
         verbose_name = "Базовый товар"
         verbose_name_plural = "4. Базовые товары"
 
