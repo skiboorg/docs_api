@@ -341,7 +341,7 @@ class CheckFtp(APIView):
             for name in names:
                 if host.path.isfile(name):
                     host.download(name, name)
-        tree = etree.parse('Tovar.xml')
+        tree = etree.parse('tovar.xml')
         root = tree.getroot()
         new_items = 0
         updated_items = 0
@@ -358,7 +358,7 @@ class CheckFtp(APIView):
             else:
                 updated_items += 1
             item.name = item_name
-            item.price = item_price
+            item.price = int(item_price)
             item.save()
 
         tree = etree.parse('vigruzka.xml')
