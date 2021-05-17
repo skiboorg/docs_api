@@ -84,7 +84,7 @@ class GetSubcategoryItems(generics.ListAPIView):
         if items:
             return items
         else:
-            return Response(status=404)
+            return
 
 class GetCollectionBySlug(generics.ListAPIView):
     serializer_class = CollectionWithItemsSerializer
