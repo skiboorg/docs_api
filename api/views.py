@@ -80,7 +80,7 @@ class GetCategories(generics.ListAPIView):
 class GetSubcategoryItems(generics.ListAPIView):
     serializer_class = SimpleItemSerializer
     def get_queryset(self):
-        items = Item.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'])
+        items = Item.objects.filter(subcategory__name_slug=self.request.query_params['subcategory_name_slug'], is_active=True)
         if items:
             return items
         else:
