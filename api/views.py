@@ -112,8 +112,8 @@ class GetRecommendedItems(generics.ListAPIView):
     def get_queryset(self):
         base_item_slug = self.request.query_params['base_item_slug']
         item = Item.objects.get(name_slug=base_item_slug)
-        subcat = item.subcategory
-        items = subcat.subcategory_items.all().exclude(id=item.id)[:3]
+        subcat = item.recommended_subcategory
+        items = subcat.subcategory_items.filter(is_active=True).exclude(id=item.id)[:3]
         print(items)
         return items
 

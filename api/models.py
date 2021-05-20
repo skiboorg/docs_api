@@ -282,6 +282,9 @@ class ItemModification(models.Model):
 class Item(models.Model):
     id_1c = models.CharField('ID 1C', max_length=255, blank=True, null=True)
     order_num = models.IntegerField('Номер по порядку', default=100)
+    recommended_subcategory = models.ForeignKey(SubCategory, verbose_name='Подкатегория для рекомендуемых товаров',
+                                    on_delete=models.SET_NULL, blank=True, null=True, db_index=True)
+
     subcategory = models.ForeignKey(SubCategory, verbose_name='Подкатегория',
                                    on_delete=models.SET_NULL, blank=True, null=True, db_index=True,
                                    related_name='subcategory_items')
