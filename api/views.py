@@ -115,7 +115,10 @@ class GetRecommendedItems(generics.ListAPIView):
         subcat = item.recommended_subcategory
         items = subcat.subcategory_items.filter(is_active=True).exclude(id=item.id)[:3]
         print(items)
-        return items
+        if items:
+            return items
+        else:
+            return
 
 class GetItem_old(APIView):
     def get(self,request):
