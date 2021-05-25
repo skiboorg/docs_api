@@ -44,7 +44,7 @@
                         <unit code="pcs" name="Штука" sym="шт."/>
                         <vatRate>none</vatRate>
                         <dimensions>100/50.8/150</dimensions>
-                        <barcode>012485ab</barcode>
+                        <barcode>{ item_type.bar_cade }}</barcode>
                         <markable>Y</markable>
                     </offer>
                 {% endif %}

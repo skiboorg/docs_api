@@ -414,13 +414,17 @@ class CheckFtp(APIView):
 
             item_id = element.find("item_id").text
 
-
+            try:
+                bar_code = element.find("barcode").text
+            except:
+                bar_code = ''
             if base_item:
                 item_type, created = ItemType.objects.get_or_create(id_1c=item_id)
                 if created:
                     new_items_types += 1
                 item_type.item = base_item
                 item_type.color = color
+                item_type.bar_cade = bar_code
                 item_type.size = size
                 item_type.height = height
                 item_type.material = material
