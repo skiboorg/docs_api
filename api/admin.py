@@ -16,7 +16,7 @@ class ItemAdmin(admin.ModelAdmin):
 
 class ItemTypeAdmin(admin.ModelAdmin):
     list_display = ['article_tag','name_tag','color_tag','size_tag',
-                    'height_tag','material_tag','modification_tag','quantity_tag']
+                    'height_tag','material_tag','modification_tag','quantity_tag','is_active']
     list_filter = ('item','color','size')
 
     class Meta:

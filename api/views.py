@@ -97,6 +97,11 @@ class GetHomeCollections(generics.ListAPIView):
     def get_queryset(self):
         return Collection.objects.filter(is_show_at_home=True)
 
+class GetNewItems(generics.ListAPIView):
+    serializer_class = CollectionItemSerializer
+    def get_queryset(self):
+        return Item.objects.filter(is_new=True)
+
 
 class GetItem(generics.RetrieveAPIView):
     serializer_class = ItemSerializer

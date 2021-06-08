@@ -8,6 +8,7 @@ urlpatterns = [
     path('get_categories', views.GetCategories.as_view()),
     path('get_collection_by_slug', views.GetCollectionBySlug.as_view()),
     path('get_home_collections', views.GetHomeCollections.as_view()),
+    path('get_new_items', views.GetNewItems.as_view()),
     path('get_subcategory_items', views.GetSubcategoryItems.as_view()),
     path('get_item', views.GetItem.as_view()),
     path('get_recomended_items', views.GetRecommendedItems.as_view()),

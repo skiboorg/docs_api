@@ -389,6 +389,7 @@ class ItemType(models.Model):
                                  related_name='modification')
     modification_id_1c = models.CharField('ID Модификации 1C', max_length=255, blank=True, null=True)
     quantity = models.IntegerField('Остаток', default=0)
+    is_active = models.BooleanField('Отображать ?', default=True, db_index=True)
 
     def __str__(self):
         return f'Вид товара : {self.item.name} | {self.color.name} |' \
