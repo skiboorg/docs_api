@@ -198,7 +198,12 @@ class CreateOrder(APIView):
         order_data = data.get('order')
         delivery_price = data.get('delivery_price')
         cart = check_if_cart_exists(request, session_id)
-
+        pack_price = 0
+        need_pack = False
+        pack_type = order_data.get('pack_type')
+        if pack_type == 'pack':
+            pack_price = 300
+            need_pack = True
         need_register = order_data.get('need_register')
         if need_register:
             user = User.objects.create_user(order_data.get('email'), '0000')
@@ -221,7 +226,8 @@ class CreateOrder(APIView):
             delivery_price = delivery_price,
             order_code=''.join(choices(string.ascii_lowercase + string.digits, k=8)),
             weight=cart.weight,
-            total_price=cart.total_price
+            is_need_pack=need_pack,
+            total_price=cart.total_price + pack_price
         )
         if cart.client:
             new_order.client = cart.client

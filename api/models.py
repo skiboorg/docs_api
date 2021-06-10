@@ -585,6 +585,7 @@ class Order(models.Model):
     track_code = models.CharField('Трек код', max_length=50, blank=True, null=True)
     order_code = models.CharField('Код заказа', max_length=10, blank=True, null=True)
     is_complete = models.BooleanField('Заказ выполнен ?', default=False)
+    is_need_pack = models.BooleanField('Нужна упаковка?', default=False)
     is_payed = models.BooleanField('Заказ оплачен ?', default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
