@@ -327,7 +327,7 @@ class CheckOstatok(APIView):
             for name in names:
                 if host.path.isfile(name):
                     host.download(name, name)
-        tree = etree.parse('VigruzkaOstatok.xml')
+        tree = etree.parse('vigruzkaostatok.xml')
         root = tree.getroot()
         print(root)
         items = 0
