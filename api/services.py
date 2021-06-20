@@ -105,6 +105,18 @@ def pay_request(order):
     items = []
 
     for item in order.items.all():
+        if delivery_price > 0:
+            items.append({
+                "description": 'Доставка',
+                "quantity": 1,
+                "amount": {
+                    "value": delivery_price,
+                    "currency": "RUB"
+                },
+                "vat_code": "2",
+                "payment_mode": "full_prepayment",
+                "payment_subject": "commodity"
+            })
 
         items.append({
                     "description": item.item_type.item.name,
