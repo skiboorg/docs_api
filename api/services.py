@@ -136,7 +136,7 @@ def pay_request(order):
                 "full_name": order.fio,
                 "phone": order.phone
             },
-            "items": items
+            # "items": items
         },
         # "payment_method": {
         #     "type": payment_type,
