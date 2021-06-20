@@ -24,6 +24,7 @@ class PayComplete(APIView):
                 payment.is_payed = True
                 payment.order.is_payed = True
                 payment.save()
+                payment.order.save()
                 print('sending to crm',payment.order)
                 send_order_to_crm(payment.order)
             return Response(status=200)
