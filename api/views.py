@@ -15,11 +15,20 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 class PayComplete(APIView):
-    def get(self, request):
-        print(request.data)
-        print(self.request.query_params)
     def post(self, request):
-        print(request.data)
+        data = request.data
+        payment_id = data['object']['id']
+        try:
+            payment = PaymentObj.objects.get(ya_id=payment_id)
+            if not payment.is_payed:
+                payment.is_payed = True
+                payment.order.is_payed = True
+                payment.save()
+                print('sending to crm',payment.order)
+                send_order_to_crm(payment.order)
+            return Response(status=200)
+        except:
+             return Response(status=500)
 
 class Test(APIView):
 

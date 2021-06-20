@@ -148,11 +148,14 @@ def pay_request(order):
         "description": f'Оплата заказа ID {order.id}'
     }, pay_id)
 
+    print(payment.id)
+    ya_id = payment.id
     print(payment.confirmation.confirmation_url)
 
 
 
     new_payment = PaymentObj.objects.create(pay_id=pay_id,
+                                            ya_id = ya_id,
                                             order=order,
                                             amount=amount,
                                             status='Не оплачен')

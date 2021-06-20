@@ -604,7 +604,8 @@ class Order(models.Model):
         verbose_name_plural = "Заказы"
 
 class PaymentObj(models.Model):
-    pay_id = models.CharField('ID платежа yandex',max_length=255,blank=True,null=True)
+    pay_id = models.CharField('ID платежа ',max_length=255,blank=True,null=True)
+    ya_id = models.CharField('ID платежа yandex',max_length=255,blank=True,null=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True)
     client = models.ForeignKey('user.User', blank=True, null=True,
                                   on_delete=models.CASCADE,
