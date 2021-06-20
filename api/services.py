@@ -238,10 +238,7 @@ def send_order_to_crm(order):
             }
         })
 
-    msg_html = render_to_string('new_order.html', {'message': 'gvh',
-                                                      'event': 'dsf'})
-    send_mail('Ваш заказ', None, '	info@docsuniform.ru', [order.email],
-              fail_silently=False, html_message=msg_html)
+
 
     if not order.delivery.is_self_delivery:
         delivery = {

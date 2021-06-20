@@ -13,6 +13,14 @@ import settings
 from user.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+
+class PayComplete(APIView):
+    def get(self, request):
+        print(request.data)
+        print(self.request.query_params)
+    def post(self, request):
+        print(request.data)
+
 class Test(APIView):
 
     def get(self, request):
