@@ -256,6 +256,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, required=False, read_only=True)
     city = CitySerializer(many=False, required=False, read_only=True)
+    delivery = DeliverySerializer(many=False, read_only=True, required=False)
     class Meta:
         model = Order
         fields = '__all__'

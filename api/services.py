@@ -14,7 +14,8 @@ from rest_framework.response import Response
 import retailcrm
 import uuid
 import settings
-
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 def check_if_guest_exists(session_id):
     guest, created = Guest.objects.get_or_create(session=session_id)
@@ -236,6 +237,11 @@ def send_order_to_crm(order):
                 # 'id': item.item_type.id
             }
         })
+
+    msg_html = render_to_string('new_order.html', {'message': 'gvh',
+                                                      'event': 'dsf'})
+    send_mail('Ваш заказ', None, '	info@docsuniform.ru', [order.email],
+              fail_silently=False, html_message=msg_html)
 
     if not order.delivery.is_self_delivery:
         delivery = {
