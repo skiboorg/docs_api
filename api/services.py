@@ -93,9 +93,13 @@ def image_resize_and_watermark(image,watermarked,new_w,new_h):
 def pay_request(order):
     from .models import PaymentObj
     delivery_price = order.delivery_price
+    is_need_pack = order.is_need_pack
     print('delivery_price', delivery_price)
     order_total_price = order.total_price
     amount = order_total_price + delivery_price
+    pack_price = 0
+    if is_need_pack:
+        pack_price = 300
 
     # payment_type = request.data.get('pay_type')
 
@@ -105,6 +109,20 @@ def pay_request(order):
     items = []
 
     for item in order.items.all():
+
+        if is_need_pack:
+            items.append({
+                "description": 'Упаковка',
+                "quantity": 1,
+                "amount": {
+                    "value": pack_price,
+                    "currency": "RUB"
+                },
+                "vat_code": "2",
+                "payment_mode": "full_prepayment",
+                "payment_subject": "commodity"
+            })
+
         if delivery_price > 0:
             items.append({
                 "description": 'Доставка',
@@ -140,7 +158,7 @@ def pay_request(order):
     print(items)
     payment = Payment.create({
         "amount": {
-            "value": amount,
+            "value": amount + delivery_price + pack_price,
             "currency": "RUB"
         },
         "receipt": {
