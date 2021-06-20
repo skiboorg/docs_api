@@ -97,6 +97,7 @@ def pay_request(order):
     print('delivery_price', delivery_price)
     order_total_price = order.total_price
     amount = order_total_price + delivery_price
+    print('amount',amount)
     pack_price = 0
     if is_need_pack:
         pack_price = 300
@@ -158,7 +159,7 @@ def pay_request(order):
     print(items)
     payment = Payment.create({
         "amount": {
-            "value": amount + delivery_price + pack_price,
+            "value": amount + pack_price,
             "currency": "RUB"
         },
         "receipt": {
