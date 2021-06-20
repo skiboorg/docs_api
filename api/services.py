@@ -105,6 +105,7 @@ def pay_request(order):
     items = []
 
     for item in order.items.all():
+
         items.append({
                     "description": item.item_type.item.name,
                     "quantity": item.quantity,
@@ -124,7 +125,7 @@ def pay_request(order):
         # 4        НДС        чека        по        ставке        20 %
         # 5        НДС        чека        по        расчетной        ставке        10 / 110
         # 6        НДС        чека        по        расчетной        ставке        20 / 120
-
+    print(items)
     payment = Payment.create({
         "amount": {
             "value": amount,
