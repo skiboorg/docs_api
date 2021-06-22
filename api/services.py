@@ -141,7 +141,7 @@ def pay_request(order):
                     "description": item.item_type.item.name,
                     "quantity": item.quantity,
                     "amount": {
-                        "value": item.price,
+                        "value": item.price / item.quantity,
                         "currency": "RUB"
                     },
                     "vat_code": "2",
