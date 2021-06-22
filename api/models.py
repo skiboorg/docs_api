@@ -551,7 +551,8 @@ class OrderItem(models.Model):
     price = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'ID:{self.id} | Товар в заказе'
+        return f'ID:{self.id} | {self.item_type.item.name} | {self.item_type.color.name} |' \
+               f' {self.item_type.size.name} | {self.item_type.height.name}  | {self.item_type.material.name} | {self.item_type.modification.name}'
 
     class Meta:
         verbose_name = "Товар в заказе"

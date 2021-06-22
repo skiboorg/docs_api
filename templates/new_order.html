@@ -36,6 +36,7 @@
         {% if order.delivery.name != 'Самовывоз'   %}
             <strong>Город доставки</strong> :{{ order.city.name }}
             <strong>Адрес доставки</strong> :{{ order.street }} {{ order.house }} {{ order.flat }}
+            <strong>Стоимость доставки</strong> :{{ order.delivery_price }} &#8381;
         {% endif %}
     </td>
   </tr>
@@ -74,11 +75,19 @@
 
 
   {% for item in items %}
+      {% if order.is_need_pack %}
+          <tr>
+          <td>-</td>
+          <td>Упаковка</td>
+          <td>-</td>
+          <td>1</td>
+          <td>300 &#8381;</td>
+          <td>300 &#8381;</td>
+          </tr>
+      {%  endif %}
     <tr>
 
-      <td style="padding: 3px; border: 1px solid #999; text-align: center; "><img style="width:100px;" src="https://docsuniform.ru{{ item.item_type.item.images.first.image_thumb.url }}"
-
-      </td>
+      <td style="padding: 3px; border: 1px solid #999; text-align: center; "><img style="width:100px;" src="https://docsuniform.ru{{ item.item_type.item.images.first.image_thumb.url }}"></td>
       <td style="padding: 3px; border: 1px solid #999; text-align: center; ">{{ item.item_type.item.name }}</td>
       <td style="padding: 3px; border: 1px solid #999; text-align: center; ">{{ item.item_type.item.article }}</td>
       <td style="padding: 3px; border: 1px solid #999; text-align: center; ">{{ item.quantity }}</td>
