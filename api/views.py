@@ -256,10 +256,10 @@ class CreateOrder(APIView):
 
         new_order.save()
 
-        msg_html = render_to_string('new_order.html', {'order': new_order,
-                                                       'items': cart.items.all()})
-        send_mail('Ваш заказ', None, 'noreply@docsuniform.ru', [new_order.email,'info@docsuniform.ru'],
-                  fail_silently=False, html_message=msg_html)
+        # msg_html = render_to_string('new_order.html', {'order': new_order,
+        #                                                'items': cart.items.all()})
+        # send_mail('Ваш заказ', None, 'noreply@docsuniform.ru', [new_order.email,'info@docsuniform.ru'],
+        #           fail_silently=False, html_message=msg_html)
 
         for item in cart.items.all():
             new_order_item = OrderItem.objects.create(item_type=item.item_type,quantity=item.quantity)

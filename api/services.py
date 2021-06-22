@@ -320,4 +320,9 @@ def send_order_to_crm(order):
     print('result.get_errors()', result.get_errors())
     print('result.get_status_code()', result.get_status_code())
     print('result.get_response()', result.get_response())
+
+    msg_html = render_to_string('new_order.html', {'order': order,
+                                                   'items': order.items.all()})
+    send_mail('Ваш заказ', None, 'noreply@docsuniform.ru', [order.email, 'info@docsuniform.ru'],
+              fail_silently=False, html_message=msg_html)
     return
