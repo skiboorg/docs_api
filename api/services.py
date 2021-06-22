@@ -174,7 +174,8 @@ def pay_request(order):
         # },
         "confirmation": {
             "type": "redirect",
-            "return_url": f'{settings.HOST}/payment_complete?pay_id={pay_id}'
+            # "return_url": f'{settings.HOST}/payment_complete?pay_id={pay_id}'
+            "return_url": f'{settings.HOST}'
         },
         "capture": True,
         "description": f'Оплата заказа ID {order.id}'
@@ -294,7 +295,7 @@ def send_order_to_crm(order):
 
     client = retailcrm.v5(f'https://{settings.CRM_URL}.retailcrm.ru', settings.CRM_API)
 
-    order = {
+    order_info = {
         'payments': [
             {
                 'type': 'site-u-kassa',
@@ -315,8 +316,8 @@ def send_order_to_crm(order):
         'delivery': delivery
     }
 
-    print('order', order)
-    result = client.order_create(order)
+    print('order', order_info)
+    result = client.order_create(order_info)
     print('result.get_errors()', result.get_errors())
     print('result.get_status_code()', result.get_status_code())
     print('result.get_response()', result.get_response())
