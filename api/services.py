@@ -100,7 +100,7 @@ def pay_request(order):
     pack_price = 0
     if is_need_pack:
         pack_price = 300
-    amount = order_total_price + delivery_price + pack_price
+    amount = order_total_price + delivery_price
     print('amount', amount)
     # payment_type = request.data.get('pay_type')
 
