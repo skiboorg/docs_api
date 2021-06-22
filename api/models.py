@@ -399,7 +399,7 @@ class ItemType(models.Model):
 
     def __str__(self):
         return f'Вид товара : {self.item.name} | {self.color.name} |' \
-               f' {self.size.name} | {self.height.name} || Остаток: {self.quantity}'# | {self.material.name} | {self.modification.name}'
+               f' {self.size.name} | {self.height.name} || Остаток: {self.quantity} | {self.material.name} | {self.modification.name}'
 
     class Meta:
         verbose_name = "Вид товара"
@@ -551,7 +551,7 @@ class OrderItem(models.Model):
     price = models.IntegerField(default=0)
 
     def __str__(self):
-        return "Товар в заказе"
+        return f'ID:{self.id} | Товар в заказе'
 
     class Meta:
         verbose_name = "Товар в заказе"
