@@ -96,12 +96,12 @@ def pay_request(order):
     is_need_pack = order.is_need_pack
     print('delivery_price', delivery_price)
     order_total_price = order.total_price
-    amount = order_total_price + delivery_price
-    print('amount',amount)
+
     pack_price = 0
     if is_need_pack:
         pack_price = 300
-
+    amount = order_total_price + delivery_price + pack_price
+    print('amount', amount)
     # payment_type = request.data.get('pay_type')
 
     Configuration.account_id = settings.YA_SHOP_ID
@@ -159,7 +159,7 @@ def pay_request(order):
     print(items)
     payment = Payment.create({
         "amount": {
-            "value": amount + pack_price,
+            "value": amount,
             "currency": "RUB"
         },
         "receipt": {
