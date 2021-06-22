@@ -34,6 +34,14 @@ class CityAdmin(admin.ModelAdmin):
     class Meta:
         model = City
 
+class OrderItemInline (admin.TabularInline):
+    model = Order.items.through
+    extra = 0
+
+class OrderAdmin(admin.ModelAdmin):
+    inlines = [OrderItemInline]
+    class Meta:
+        model = OrderItem
 
 admin.site.register(Banner)
 admin.site.register(Category)
@@ -52,7 +60,7 @@ admin.site.register(ItemMaterial)
 admin.site.register(City,CityAdmin)
 admin.site.register(DeliveryType)
 admin.site.register(PromoCode)
-admin.site.register(Order)
+admin.site.register(Order,OrderAdmin)
 admin.site.register(OrderItem)
 admin.site.register(CdekKey)
 admin.site.register(CdekOffice)
