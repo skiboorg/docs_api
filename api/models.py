@@ -201,6 +201,7 @@ class ItemColor(models.Model):
         return f'{self.name}'
 
     class Meta:
+
         verbose_name = "Цвет"
         verbose_name_plural = "5.3. Цвета"
 
@@ -396,12 +397,14 @@ class ItemType(models.Model):
     modification_id_1c = models.CharField('ID Модификации 1C', max_length=255, blank=True, null=True)
     quantity = models.IntegerField('Остаток', default=0)
     is_active = models.BooleanField('Отображать ?', default=True, db_index=True)
+    is_first = models.BooleanField('Первый ?', default=False, db_index=True)
 
     def __str__(self):
         return f'Вид товара : {self.item.name} | {self.color.name} |' \
                f' {self.size.name} | {self.height.name} || Остаток: {self.quantity} | {self.material.name} | {self.modification.name}'
 
     class Meta:
+        ordering = ('-is_first',)
         verbose_name = "Вид товара"
         verbose_name_plural = "5. Виды товаров"
 
@@ -471,6 +474,7 @@ class ItemImage(models.Model):
         return '%s Изображение для товара : %s ' % (self.id, self.item.name)
 
     class Meta:
+
         verbose_name = "Изображение для товара"
         verbose_name_plural = "Изображения для товара"
 
