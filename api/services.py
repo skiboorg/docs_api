@@ -137,11 +137,14 @@ def pay_request(order):
                 "payment_subject": "commodity"
             })
 
+        print('item price',item.price / item.quantity if not order.promo_code else
+                        int((item.price / item.quantity) - ((item.price / item.quantity) * order.promo_code.discount / 100)))
         items.append({
                     "description": item.item_type.item.name,
                     "quantity": item.quantity,
                     "amount": {
-                        "value": item.price / item.quantity,
+                        "value": item.price / item.quantity if not order.promo_code else
+                        int((item.price / item.quantity) - ((item.price / item.quantity) * order.promo_code.discount / 100)),
                         "currency": "RUB"
                     },
                     "vat_code": "2",
