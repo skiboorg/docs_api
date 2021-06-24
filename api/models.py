@@ -627,3 +627,14 @@ class PaymentObj(models.Model):
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
+
+
+class MailSubscribe(models.Model):
+    email = models.CharField('Email', max_length=255, blank=True,null=True)
+
+    def __str__(self):
+        return f' {self.email}'
+
+    class Meta:
+        verbose_name = "Подписка на рассылку"
+        verbose_name_plural = "0.Подписка на рассылку"

@@ -10,6 +10,7 @@ class ItemAdmin(admin.ModelAdmin):
     list_display = ['image_tag','collection_tag', 'name', 'article', 'price', 'is_active','is_in_feed','discount','order_num']
     inlines = [ImagesInline]
     list_filter = ('is_active', 'is_in_feed','collection',)
+    search_fields = ('name_lower', 'article')
     class Meta:
         model = Item
 
@@ -65,4 +66,5 @@ admin.site.register(OrderItem)
 admin.site.register(CdekKey)
 admin.site.register(CdekOffice)
 admin.site.register(PaymentObj)
+admin.site.register(MailSubscribe)
 

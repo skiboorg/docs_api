@@ -14,6 +14,10 @@ from user.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
+class AddSubscribe(APIView):
+    def post(self, request):
+        MailSubscribe.objects.create(email=request.data.get('email'))
+        return  Response(status=200)
 class PayComplete(APIView):
     def post(self, request):
         data = request.data
