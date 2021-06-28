@@ -281,7 +281,7 @@ def send_order_to_crm(order):
 
     if not order.delivery.is_self_delivery:
         delivery = {
-            'code': 'sdek',
+            'code': 'sdek' if not order.delivery.is_office_cdek else 'sdekoffice',
             'address':
                 {
                     'city': order.city.name,
