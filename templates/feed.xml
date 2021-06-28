@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+    <channel>
+        <title>DOC'S UNIFORM</title>
+        <link>https://docsuniform.ru/</link>
+        <description>Купить медицинскую одежду из каталога интернет-магазина DOC’S</description>
+        {% for item_type in item_types %}
+            {% if item_type.item.is_in_feed %}
+                <item>
+                    <g:id>{{ item_type.item.id_1c }}</g:id>
+                    <g:title>{{ item_type.item.name }}</g:title>
+                    <g:description>{{ item_type.item.short_description }}</g:description>
+                    <g:link>{{ base_url }}{{ item_type.get_path }}</g:link>
+                    {% if item_type.item.images.all %}
+                        {% for image in item_type.item.images.all %}
+                            <g:image_link>{{ base_url }}{{ image.image.url }}</g:image_link>
+                        {% endfor %}
+                    {% endif %}
+
+                    <g:size>{{ item_type.size.name }}</g:size>
+                    <g:color>{{ item_type.color.name }}</g:color>
+                    <g:material>{{ item_type.material.name }}</g:material>
+                    {% if item_type.quantity > 0 %}
+                        <g:availability>В НАЛИЧИИ</g:availability>
+                    {% else %}
+                        <g:availability>НЕТ</g:availability>
+                    {% endif %}
+                    <g:price>{{ item_type.item.price }}</g:price>
+                    <g:custom_label_0>{{ item_type.height.name }}</g:custom_label_0>
+                    <g:google_product_category>{{ item_type.item.subcategory.name }}</g:google_product_category>
+                </item>
+            {% endif %}
+        {% endfor %}
+    </channel>
+</rss>

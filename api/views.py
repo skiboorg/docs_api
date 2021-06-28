@@ -348,6 +348,19 @@ def catalog_feed(request,):
     return HttpResponse(t.render(c),content_type='text/xml')
 
 
+def feed_feed(request,):
+    template_vars = {}
+    template_vars['categories'] = Category.objects.all()
+    template_vars['item_types'] = ItemType.objects.all()
+    template_vars['base_url'] = settings.BASE_URL
+    template_vars['created'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+    t = loader.get_template('feed.xml')
+    c = template_vars
+    return HttpResponse(t.render(c),content_type='text/xml')
+
+
 class CheckOstatok(APIView):
     def get(self, request):
         from lxml import etree

@@ -31,5 +31,6 @@ urlpatterns = [
 
 
     path('catalog.xml', views.catalog_feed, name='catalog_feed'),
+    path('feed.xml', views.feed_feed, name='feed_feed'),
 
 ]
