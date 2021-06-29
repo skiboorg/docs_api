@@ -488,6 +488,9 @@ class ItemImage(models.Model):
     image_tag.short_description = 'Картинка'
 
     def save(self, *args, **kwargs):
+        self.image.save(f'{self.item.name_slug}.jpg',
+                              File(image_resize_and_watermark(self.image, False, 700, 1000)), save=False)
+
         self.image_thumb.save(f'{self.item.name_slug}-thumb.jpg',
                               File(image_resize_and_watermark(self.image, False, 350, 450)), save=False)
         super(ItemImage, self).save(*args, **kwargs)
@@ -497,9 +500,11 @@ class PromoCode(models.Model):
     code = models.CharField('ПромоКод', max_length=255, blank=False, null=True)
     discount = models.IntegerField('Скидка % по коду',default=0)
     summ = models.IntegerField('Скидка в рублях по коду',default=0)
+    is_one_use = models.BooleanField('Одноразовый', default=False)
+    is_used = models.BooleanField('Использован', default=False)
 
     def __str__(self):
-        return f'Промо код {self.code} | Скидка {self.discount}% | Скидка {self.summ}руб'
+        return f'Промо код {self.code} | Скидка {self.discount}% | Скидка {self.summ}руб | Одноразовый {self.is_one_use} | Использован {self.is_used}'
     class Meta:
         verbose_name = "Промо код"
         verbose_name_plural = "6. Промо коды"

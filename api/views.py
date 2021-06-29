@@ -13,11 +13,18 @@ import settings
 from user.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from random import choices
+import string
 
 class AddSubscribe(APIView):
     def post(self, request):
         MailSubscribe.objects.create(email=request.data.get('email'))
+        code ='' + ''.join(choices(string.ascii_uppercase + string.digits, k=5))
+        print(code)
+        PromoCode.objects.create(code=code,discount=10,is_one_use=True)
         return  Response(status=200)
+
+
 class PayComplete(APIView):
     def post(self, request):
         data = request.data
@@ -287,10 +294,16 @@ class ApplyPromo(APIView):
         data = request.data
         try:
             promo = PromoCode.objects.get(code=data.get('code'))
-            cart = check_if_cart_exists(request, data.get('session_id'))
-            cart.promo_code = promo
-            cart.save()
-            return Response({'status': True}, status=200)
+            if not promo.is_used:
+                cart = check_if_cart_exists(request, data.get('session_id'))
+                cart.promo_code = promo
+                cart.save()
+                if promo.is_one_use:
+                    promo.is_used = True
+                    promo.save()
+                return Response({'status': True}, status=200)
+            else:
+                return Response({'status': False}, status=200)
         except:
 
             return Response({'status':False}, status=200)
