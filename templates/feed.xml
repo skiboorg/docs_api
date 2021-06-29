@@ -21,11 +21,13 @@
                     <g:color>{{ item_type.color.name }}</g:color>
                     <g:material>{{ item_type.material.name }}</g:material>
                     {% if item_type.quantity > 0 %}
-                        <g:availability>В НАЛИЧИИ</g:availability>
+                        <g:availability>in stock</g:availability>
                     {% else %}
-                        <g:availability>НЕТ</g:availability>
+                        <g:availability>not available</g:availability>
                     {% endif %}
                     <g:price>{{ item_type.item.price }}</g:price>
+                    <g:brand>DOCS</g:brand>
+                    <g:condition>new</g:condition>
                     <g:custom_label_0>{{ item_type.height.name }}</g:custom_label_0>
                     <g:google_product_category>{{ item_type.item.subcategory.name }}</g:google_product_category>
                 </item>
