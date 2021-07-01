@@ -18,11 +18,18 @@ import string
 
 class AddSubscribe(APIView):
     def post(self, request):
-        MailSubscribe.objects.create(email=request.data.get('email'))
-        code ='' + ''.join(choices(string.ascii_uppercase + string.digits, k=5))
-        print(code)
-        PromoCode.objects.create(code=code,discount=10,is_one_use=True)
-        return  Response(status=200)
+
+        item,created = MailSubscribe.objects.get_or_create(email=request.data.get('email'))
+        if created:
+            code ='' + ''.join(choices(string.ascii_uppercase + string.digits, k=5))
+            print(code)
+            PromoCode.objects.create(code=code,discount=10,is_one_use=True)
+            msg_html = render_to_string('subscribe.html', {'code': code})
+            send_mail('Ваш промо-код', None, 'noreply@docsuniform.ru', [request.data.get('email'),],
+                      fail_silently=False, html_message=msg_html)
+            return Response(status=200)
+        else:
+            return Response(status=201)
 
 
 class PayComplete(APIView):

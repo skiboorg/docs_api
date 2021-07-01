@@ -5,7 +5,7 @@
         <link>https://docsuniform.ru/</link>
         <description>Купить медицинскую одежду из каталога интернет-магазина DOC’S</description>
         {% for item_type in item_types %}
-            {% if item_type.item.is_in_feed %}
+            {% if item_type.item.is_active %}
                 <item>
                     <g:id>{{ item_type.item.id_1c }}</g:id>
                     <g:title>{{ item_type.item.name }}</g:title>
