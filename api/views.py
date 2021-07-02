@@ -235,18 +235,24 @@ class CreateOrder(APIView):
         order_data = data.get('order')
         delivery_price = data.get('delivery_price')
         cart = check_if_cart_exists(request, session_id)
+
+        need_register = order_data.get('need_register')
+        if need_register:
+            try:
+                user = User.objects.create_user(order_data.get('email'), '0000')
+                user.fio = order_data.get('fio')
+                user.phone = order_data.get('phone')
+                user.save()
+            except:
+                return Response({'email_error': True}, status=200)
+
         pack_price = 0
         need_pack = False
         pack_type = order_data.get('pack_type')
         if pack_type == 'pack':
             pack_price = 300
             need_pack = True
-        need_register = order_data.get('need_register')
-        if need_register:
-            user = User.objects.create_user(order_data.get('email'), '0000')
-            user.fio = order_data.get('fio')
-            user.phone = order_data.get('phone')
-            user.save()
+
 
         new_order = Order.objects.create(
             payment=order_data.get('pay_type'),
