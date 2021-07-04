@@ -327,6 +327,6 @@ def send_order_to_crm(order):
 
     msg_html = render_to_string('new_order.html', {'order': order,
                                                    'items': order.items.all()})
-    send_mail('Ваш заказ', None, 'noreply@docsuniform.ru', [order.email, 'unidocs.shop@gmail.com'],
+    send_mail('Ваш заказ', None, 'noreply@docsuniform.ru', [order.email, 'unidocs.shop@gmail.com', 'dimon.skiborg@gmail.com'],
               fail_silently=False, html_message=msg_html)
     return
