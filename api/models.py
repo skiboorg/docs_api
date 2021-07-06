@@ -603,7 +603,7 @@ class Order(models.Model):
     is_complete = models.BooleanField('Заказ выполнен ?', default=False)
     is_need_pack = models.BooleanField('Нужна упаковка?', default=False)
     is_payed = models.BooleanField('Заказ оплачен ?', default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField('Дата/Время', auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

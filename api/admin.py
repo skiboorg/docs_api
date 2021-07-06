@@ -40,6 +40,8 @@ class OrderItemInline (admin.TabularInline):
     extra = 0
 
 class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'created_at', 'total_price', 'email', 'phone', 'is_payed']
+    list_filter = ('is_payed',)
     inlines = [OrderItemInline]
     class Meta:
         model = OrderItem

@@ -9,7 +9,7 @@
                 <item>
                     <g:id>{{ item_type.item.id_1c }}</g:id>
                     <g:title>{{ item_type.item.name }}</g:title>
-                    <g:description>{{ item_type.item.description }}</g:description>
+                    <g:description>{{ item_type.item.short_description }}</g:description>
                     <g:link>{{ base_url }}{{ item_type.get_path }}</g:link>
                     {% if item_type.item.images.all %}
                         {% for image in item_type.item.images.all %}
@@ -23,7 +23,7 @@
                     {% if item_type.quantity > 0 %}
                         <g:availability>in stock</g:availability>
                     {% else %}
-                        <g:availability>not available</g:availability>
+                        <g:availability>out of stock</g:availability>
                     {% endif %}
                     <g:price>{{ item_type.item.price }}</g:price>
                     <g:brand>DOCS</g:brand>
