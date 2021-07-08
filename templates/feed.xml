@@ -7,7 +7,7 @@
         {% for item_type in item_types %}
             {% if item_type.item.is_active %}
                 <item>
-                    <g:id>{{ item_type.item.id_1c }}</g:id>
+                    <g:id>{{ item_type.id }}</g:id>
                     <g:title>{{ item_type.item.name }}</g:title>
                     <g:description>{{ item_type.item.short_description }}</g:description>
                     <g:link>{{ base_url }}{{ item_type.get_path }}</g:link>
