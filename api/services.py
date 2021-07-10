@@ -109,33 +109,33 @@ def pay_request(order):
     pay_id = uuid.uuid4()
     items = []
 
+    if is_need_pack:
+        items.append({
+            "description": 'Упаковка',
+            "quantity": 1,
+            "amount": {
+                "value": pack_price,
+                "currency": "RUB"
+            },
+            "vat_code": "2",
+            "payment_mode": "full_prepayment",
+            "payment_subject": "commodity"
+        })
+    if delivery_price > 0:
+        items.append({
+            "description": 'Доставка',
+            "quantity": 1,
+            "amount": {
+                "value": delivery_price,
+                "currency": "RUB"
+            },
+            "vat_code": "2",
+            "payment_mode": "full_prepayment",
+            "payment_subject": "commodity"
+        })
     for item in order.items.all():
 
-        if is_need_pack:
-            items.append({
-                "description": 'Упаковка',
-                "quantity": 1,
-                "amount": {
-                    "value": pack_price,
-                    "currency": "RUB"
-                },
-                "vat_code": "2",
-                "payment_mode": "full_prepayment",
-                "payment_subject": "commodity"
-            })
 
-        if delivery_price > 0:
-            items.append({
-                "description": 'Доставка',
-                "quantity": 1,
-                "amount": {
-                    "value": delivery_price,
-                    "currency": "RUB"
-                },
-                "vat_code": "2",
-                "payment_mode": "full_prepayment",
-                "payment_subject": "commodity"
-            })
 
         print('item price',item.price / item.quantity if not order.promo_code else
                         int((item.price / item.quantity) - ((item.price / item.quantity) * order.promo_code.discount / 100)))
