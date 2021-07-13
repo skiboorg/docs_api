@@ -264,6 +264,7 @@ class CreateOrder(APIView):
             flat=order_data.get('flat'),
             delivery_id=order_data.get('delivery_type'),
             city_id=order_data.get('delivery_city') if order_data.get('delivery_city') else None,
+            office_id=order_data.get('delivery_office') if order_data.get('delivery_office') else None,
             comment=order_data.get('comment'),
             promo_code=cart.promo_code,
             delivery_price=delivery_price,

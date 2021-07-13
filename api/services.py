@@ -285,9 +285,9 @@ def send_order_to_crm(order):
             'cost': order.delivery_price,
             'address':
                 {
-                    'city': order.city.name,
+                    'city': order.city.name if not order.delivery.is_office_cdek else order.city.name,
                     'cityId': order.city.code,
-                    'street': order.street,
+                    'street': order.street if not order.delivery.is_office_cdek else order.office.address,
                     'building': order.house,
                     'flat': order.flat,
                 }

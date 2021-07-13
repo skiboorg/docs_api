@@ -73,7 +73,7 @@ class CdekOffice(models.Model):
     address = models.CharField('Адрес офиса', max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f'{self.office_id} - {self.city.name}'
+        return f'{self.office_id} - {self.city.name} : {self.address}'
 
     class Meta:
         #ordering = ('name', )
@@ -591,6 +591,8 @@ class Order(models.Model):
                                verbose_name='Доставка')
     city = models.ForeignKey(City, blank=True, null=True, default=None, on_delete=models.CASCADE,
                                  verbose_name='Город')
+    office=models.ForeignKey(CdekOffice, blank=True, null=True, on_delete=models.CASCADE,
+                                 verbose_name='Офис')
     comment = models.TextField(blank=True, null=True)
     total_price = models.IntegerField('Общая стоимость заказа', default=0)
     # total_price_with_code = models.DecimalField('Общая стоимость заказа с учетом промо-кода', decimal_places=2,
