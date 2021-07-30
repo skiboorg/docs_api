@@ -104,6 +104,12 @@ class GetItems(generics.ListAPIView):
     serializer_class = ItemTypeSiteMapSerializer
     queryset = ItemType.objects.all()
 
+class GetItemsByCategory(generics.ListAPIView):
+    serializer_class = SimpleItemSerializer
+
+    def get_queryset(self):
+        return Item.objects.filter(subcategory__category__name_slug=self.request.query_params.get('name_slug'),is_active=True)
+
 class GetBanners(generics.ListAPIView):
     serializer_class = BannerSerializer
     queryset = Banner.objects.all()

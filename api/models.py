@@ -195,8 +195,8 @@ class ItemColor(models.Model):
     id_1c = models.CharField('ID 1C', max_length=255, blank=True, null=True)
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
     name = models.CharField('Название', max_length=255, blank=True, null=True)
-    bg_color = ColorField('Цвет', default='#000000')
-
+    bg_color = ColorField('Цвет', blank=True, null=True)
+    image = models.ImageField('Изображение цвета', upload_to='images/catalog/items/', blank=True, null=True)
     def __str__(self):
         return f'{self.name}'
 

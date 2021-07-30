@@ -57,6 +57,7 @@ class ItemModificationSerializer(serializers.ModelSerializer):
 
 
 class ItemImageSerializer(serializers.ModelSerializer):
+    color = ItemColorSerializer(many=False, read_only=True, required=False)
     class Meta:
         model = ItemImage
         fields = '__all__'

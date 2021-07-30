@@ -243,7 +243,7 @@ def calculateDelivery(access_token,city_code,weight,cdek_type):
         "type": "2",
         # "date": "2020-11-03T11:49:32+0700",
         "currency": "1",
-        "tariff_code": "11" if cdek_type == 'not_office' else "10",
+        "tariff_code": "1" if cdek_type == 'not_office' else "12",
         "from_location": {
             "code": "44"
         },
