@@ -436,18 +436,21 @@ class CheckFtp(APIView):
         new_items_types = 0
         updated_items_types = 0
         for element in root:
-            item_id = element.find("basic_item").text
-            item_name = element.find("name").text
-            item_price = element.find("price").text
-            item, created = Item.objects.get_or_create(id_1c=item_id)
-            print(item_name)
-            if created:
-                new_items += 1
-            else:
-                updated_items += 1
-            item.name = item_name
-            item.price = int(item_price)
-            item.save()
+            try:
+                item_id = element.find("basic_item").text
+                item_name = element.find("name").text
+                item_price = element.find("price").text
+                item, created = Item.objects.get_or_create(id_1c=item_id)
+                print(item_name)
+                if created:
+                    new_items += 1
+                else:
+                    updated_items += 1
+                item.name = item_name
+                item.price = int(item_price)
+                item.save()
+            except:
+                print('error')
 
         tree = etree.parse('vigruzka.xml')
         root = tree.getroot()
